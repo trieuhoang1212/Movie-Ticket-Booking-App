@@ -1,0 +1,156 @@
+version: "3.8"
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: movie-booking-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: movie_booking
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - movie-booking-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./auth-service/srs
+      dockerfile: Dockerfile
+    container_name: auth-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_auth?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRES_IN=7d
+    depends_on:
+      - mongodb
+    networks:
+      - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3001/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Booking Service
+  booking-service:
+    build:
+      context: ./booking-service/srs
+      dockerfile: Dockerfile
+    container_name: booking-service
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_booking?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - movie-booking-network
+
+  # User Service
+  user-service:
+    build:
+      context: ./user-service/srs
+      dockerfile: Dockerfile
+    container_name: user-service
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_user?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - movie-booking-network
+
+  # Payment Service
+  payment-service:
+    build:
+      context: ./payment-service/srs
+      dockerfile: Dockerfile
+    container_name: payment-service
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_payment?authSource=admin
+      - VNPAY_TMN_CODE=your_vnpay_code
+      - VNPAY_SECRET_KEY=your_vnpay_secret
+    depends_on:
+      - mongodb
+    networks:
+      - movie-booking-network
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./notification-service/srs
+      dockerfile: Dockerfile
+    container_name: notification-service
+    restart: unless-stopped
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_notification?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - movie-booking-network
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ../api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    depends_on:
+      - auth-service
+      - booking-service
+      - user-service
+      - payment-service
+      - notification-service
+    networks:
+      - movie-booking-network
+
+networks:
+  movie-booking-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
