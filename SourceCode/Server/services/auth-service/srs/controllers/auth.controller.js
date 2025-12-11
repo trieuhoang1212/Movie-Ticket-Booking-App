@@ -2,8 +2,8 @@ const User = require("../repositories/user.model");
 const jwt = require("jsonwebtoken");
 
 // Hàm tạo JWT Token
-const generateToken = (user) => {
-  return jwt.sign({ id: userID }, process.env.JWT_SECRET, {
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
@@ -22,6 +22,7 @@ exports.register = async (req, res) => {
 
     // Tạo người dùng mới
     const user = new User({ name, email, password });
+    await user.save();
 
     // Tạo Token
     const token = generateToken(user._id);
@@ -40,12 +41,13 @@ exports.register = async (req, res) => {
         token,
       },
     });
-  } catch (error) {}
-  res.status(500).json({
-    success: false,
-    message: "Server error",
-    error: error.message,
-  });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
 };
 
 exports.login = async (req, res) => {
