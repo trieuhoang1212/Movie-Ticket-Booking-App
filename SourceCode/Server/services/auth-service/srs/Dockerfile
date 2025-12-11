@@ -1,7 +1,7 @@
 # ============================
 # Build Stage
 # ============================
-FROM node:20.19.5-slim AS builder
+FROM node:20.21.0-slim AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN npm run build
 # ============================
 # Production Stage
 # ============================
-FROM node:20.19.5-slim
+FROM node:20.21.0-slim
 
 WORKDIR /app
 
