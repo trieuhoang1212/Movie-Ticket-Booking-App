@@ -1,5 +1,21 @@
 demo
 git branch -M main
+<<<<<<< HEAD
 node_modules
 Nội Dung
 
+=======
+
+SourceCode/Server/services/auth-service/srs/node_modules
+
+# Ignore all .env files with sensitive data
+**/.env
+
+# Keep .env.example files
+!**/.env.example
+
+Nội Dung
+
+node_modules
+Nội Dung/Slide.pptx
+>>>>>>> Client
