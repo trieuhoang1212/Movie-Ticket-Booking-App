@@ -38,11 +38,7 @@
 
 ### Backend & Database
 
-- **Core:** ASP.NET Core Web API (C#)
-- **Architecture:** Clean Architecture, Repository Pattern
-- **Database:** SQL Server / PostgreSQL
-- **ORM:** Entity Framework Core
-- **Authentication:** JWT (JSON Web Token) / Firebase Auth
+
 
 ### Tools & DevOps
 

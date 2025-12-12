@@ -1,53 +1,31 @@
-# ============================
-# Build Stage
-# ============================
-FROM node:20.21.0-slim AS builder
+# Use Node.js 20 Alpine (lighter and exists)
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Cài thêm build tools khi cần biên dịch native modules
-RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
-
-COPY package*.json ./
-COPY tsconfig.json ./
-
-RUN npm ci
-
-COPY src ./src
-
-RUN npm run build
-
-
-# ============================
-# Production Stage
-# ============================
-FROM node:20.21.0-slim
-
-WORKDIR /app
-
-# Cài curl để dùng cho HEALTHCHECK
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-
-# Tạo user non-root TRƯỚC khi cài deps
-RUN groupadd -r nodejs && useradd -r -g nodejs nodejs
-
+# Copy package files
 COPY package*.json ./
 
-# Chuyển sang user non-root để chạy npm → tránh vulnerability "npm as root"
-USER nodejs
+# Install production dependencies
 RUN npm ci --only=production
 
-# Chuyển lại root để copy file
-USER root
-COPY --from=builder /app/dist ./dist
+# Copy all source code (JavaScript, không cần build)
+COPY . .
 
-# Chuyển về user cuối cùng
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
+
+# Switch to non-root user
 USER nodejs
 
-EXPOSE 3000
+# Expose auth service port
+EXPOSE 3001
 
-# HEALTHCHECK an toàn hơn, không dùng node -e
+# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
+  CMD node -e "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-CMD ["node", "dist/index.js"]
+# Start application
+CMD ["node", "index.js"]
