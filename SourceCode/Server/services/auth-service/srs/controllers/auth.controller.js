@@ -8,6 +8,17 @@ const generateToken = (userId) => {
   });
 };
 
+// Hàm tạo Refresh Token
+const generateRefreshToken = (userId) => {
+  return jwt.sign(
+    { id: userId },
+    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+    {
+      expiresIn: "7d", // Refresh token có thời hạn dài hơn
+    }
+  );
+};
+
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -26,6 +37,7 @@ exports.register = async (req, res) => {
 
     // Tạo Token
     const token = generateToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
 
     // Trả về phản hồi
     res.status(201).json({
@@ -39,6 +51,7 @@ exports.register = async (req, res) => {
           role: user.role,
         },
         token,
+        refreshToken,
       },
     });
   } catch (error) {
@@ -74,6 +87,7 @@ exports.login = async (req, res) => {
 
     // Tạo token
     const token = generateToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
 
     // Trả về response
     res.status(200).json({
@@ -87,6 +101,7 @@ exports.login = async (req, res) => {
           role: user.role,
         },
         token,
+        refreshToken,
       },
     });
   } catch (error) {
@@ -134,35 +149,77 @@ exports.verifyToken = async (req, res) => {
   }
 };
 
+// Lấy thông tin user đã đăng nhập
 exports.getProfile = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    // req.user đã được gắn từ middleware authenticateToken
+    res.status(200).json({
+      success: true,
+      message: "Profile retrieved successfully",
+      data: { user: req.user },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
 
-    if (!token) {
+// Refresh token để gia hạn
+exports.refreshToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
       return res.status(401).json({
         success: false,
-        message: "No token provided",
+        message: "Refresh token is required",
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
+    // Verify refresh token
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findById(decoded.id);
 
     if (!user) {
-      return res.status(404).json({
+      return res.status(401).json({
         success: false,
-        message: "User not found",
+        message: "Invalid refresh token",
       });
     }
+
+    // Tạo token mới
+    const newToken = generateToken(user._id);
 
     res.status(200).json({
       success: true,
-      data: { user },
+      message: "Token refreshed successfully",
+      data: { token: newToken },
     });
   } catch (error) {
     res.status(401).json({
       success: false,
-      message: "Invalid token",
+      message: "Invalid or expired refresh token",
+    });
+  }
+};
+
+// Logout
+exports.logout = async (req, res) => {
+  try {
+    // Với JWT, logout thường xử lý ở client (xóa token)
+    // Hoặc có thể thêm blacklist token vào database/redis
+    res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
     });
   }
 };
