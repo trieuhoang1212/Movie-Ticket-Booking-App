@@ -5,6 +5,7 @@ const {
   validateRegister,
   validateLogin,
 } = require("../middlewares/validate.middleware");
+const { authenticateToken } = require("../middlewares/auth.middleware");
 
 /**
  * @swagger
@@ -90,25 +91,9 @@ router.post("/login", validateLogin, authController.login);
 
 /**
  * @swagger
- * /api/auth/verify:
- *   post:
- *     summary: Verify JWT token
- *     tags: [Authentication]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Token is valid
- *       401:
- *         description: Invalid or expired token
- */
-router.post("/verify", authController.verifyToken);
-
-/**
- * @swagger
  * /api/auth/profile:
  *   get:
- *     summary: Get user profile
+ *     summary: Get user profile (Protected)
  *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
@@ -116,10 +101,47 @@ router.post("/verify", authController.verifyToken);
  *       200:
  *         description: User profile retrieved successfully
  *       401:
- *         description: Unauthorized
- *       404:
- *         description: User not found
+ *         description: Unauthorized - Token missing or invalid
  */
-router.get("/profile", authController.getProfile);
+router.get("/profile", authenticateToken, authController.getProfile);
+
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully
+ *       401:
+ *         description: Invalid or expired refresh token
+ */
+router.post("/refresh", authController.refreshToken);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ */
+router.post("/logout", authenticateToken, authController.logout);
 
 module.exports = router;

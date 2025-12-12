@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/database");
+const { initializeFirebase } = require("./config/firebase");
 const authRoutes = require("./routes/auth.routes");
 const { swaggerUi, swaggerSpec } = require("./config/swagger");
 
@@ -32,6 +33,7 @@ app.get("/health", (req, res) => {
 const startServer = async () => {
   try {
     await connectDB();
+    initializeFirebase(); // Khởi tạo Firebase
     app.listen(PORT, () => {
       console.log(`Auth Service is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
