@@ -1,23 +1,7 @@
 demo
 git branch -M main
-<<<<<<< HEAD
-
-SourceCode/Server/services/auth-service/srs/node_modules
-
-# Ignore all .env files with sensitive data
-**/.env
-
-# Keep .env.example files
-!**/.env.example
-
-Nội Dung
-
-node_modules
-Nội Dung/Slide.pptx
-=======
 Nội Dung/TT Nhóm.txt
 SourceCode/Server/node_modules
 node_modules
 Nội Dung
 SourceCode/Server/services/auth-service/srs/.env
->>>>>>> main
