@@ -1,7 +1,11 @@
 # ============================
 # Build Stage
 # ============================
+<<<<<<< HEAD
 FROM node:20.21.0-slim AS builder
+=======
+FROM node:20-alpine AS builder
+>>>>>>> main
 
 WORKDIR /app
 
@@ -14,10 +18,18 @@ COPY src ./src
 
 RUN npm run build
 
+<<<<<<< HEAD
 # ============================
 # Production Stage
 # ============================
 FROM node:20.21.0-slim
+=======
+
+# ============================
+# Production Stage
+# ============================
+FROM node:20-alpine
+>>>>>>> main
 
 WORKDIR /app
 
@@ -29,7 +41,8 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 
 # Create non-root user
-RUN groupadd -r nodejs && useradd -r -g nodejs nodejs && \
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
     chown -R nodejs:nodejs /app
 
 USER nodejs
