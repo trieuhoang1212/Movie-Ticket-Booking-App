@@ -21,7 +21,7 @@ services:
   # Auth Service
   auth-service:
     build:
-      context: ./auth-service/srs
+      context: ./services/auth-service/srs
       dockerfile: Dockerfile
     container_name: auth-service
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
     environment:
       - PORT=3001
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_auth?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
       - JWT_SECRET=your-super-secret-jwt-key-change-in-production
       - JWT_EXPIRES_IN=7d
     depends_on:
@@ -53,7 +53,7 @@ services:
   # Booking Service
   booking-service:
     build:
-      context: ./booking-service/srs
+      context: ./services/booking-service/srs
       dockerfile: Dockerfile
     container_name: booking-service
     restart: unless-stopped
@@ -62,7 +62,7 @@ services:
     environment:
       - PORT=3002
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_booking?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
     depends_on:
       - mongodb
     networks:
@@ -71,7 +71,7 @@ services:
   # User Service
   user-service:
     build:
-      context: ./user-service/srs
+      context: ./services/user-service/srs
       dockerfile: Dockerfile
     container_name: user-service
     restart: unless-stopped
@@ -80,7 +80,7 @@ services:
     environment:
       - PORT=3003
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_user?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
     depends_on:
       - mongodb
     networks:
@@ -89,7 +89,7 @@ services:
   # Payment Service
   payment-service:
     build:
-      context: ./payment-service/srs
+      context: ./services/payment-service/srs
       dockerfile: Dockerfile
     container_name: payment-service
     restart: unless-stopped
@@ -98,7 +98,7 @@ services:
     environment:
       - PORT=3004
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_payment?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
       - VNPAY_TMN_CODE=your_vnpay_code
       - VNPAY_SECRET_KEY=your_vnpay_secret
     depends_on:
@@ -109,7 +109,7 @@ services:
   # Notification Service
   notification-service:
     build:
-      context: ./notification-service/srs
+      context: ./services/notification-service/srs
       dockerfile: Dockerfile
     container_name: notification-service
     restart: unless-stopped
@@ -118,7 +118,7 @@ services:
     environment:
       - PORT=3005
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_notification?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
     depends_on:
       - mongodb
     networks:
@@ -127,7 +127,7 @@ services:
   # API Gateway
   api-gateway:
     build:
-      context: ../api-gateway
+      context: ./api-gateway
       dockerfile: Dockerfile
     container_name: api-gateway
     restart: unless-stopped

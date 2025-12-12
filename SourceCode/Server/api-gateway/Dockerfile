@@ -1,5 +1,7 @@
-# Build TypeScript
-FROM node:20.19.5-slim AS builder
+# ============================
+# Build Stage
+# ============================
+FROM node:20.21.0-slim AS builder
 
 WORKDIR /app
 
@@ -12,8 +14,10 @@ COPY src ./src
 
 RUN npm run build
 
-# Production stage
-FROM node:20.19.5-slim
+# ============================
+# Production Stage
+# ============================
+FROM node:20.21.0-slim
 
 WORKDIR /app
 
