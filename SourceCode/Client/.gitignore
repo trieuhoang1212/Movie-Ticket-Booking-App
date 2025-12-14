@@ -49,3 +49,31 @@ ios
 macos
 windows
 
+# ===== Flutter / Gradle cache (RẤT QUAN TRỌNG) =====
+.gradle/
+**/.gradle/
+android/.gradle/
+android/**/.gradle/
+
+# Kotlin incremental & build cache
+**/kotlin/
+**/*.tab
+**/*.bin
+
+# Android build
+android/app/build/
+android/build/
+build/
+
+# Flutter tool cache
+
+# Firebase generated files
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Local config
+local.properties
+key.properties
+
+
+
