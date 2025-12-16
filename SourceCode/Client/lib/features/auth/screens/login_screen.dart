@@ -149,20 +149,29 @@ class LoginScreen extends StatelessWidget {
                 // REGISTER
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
+                  children: [ // ⚠️ QUAN TRỌNG: Đã xóa chữ 'const' ở đây
+                    const Text( // Chuyển 'const' vào đây
                       "Chưa có tài khoản? ",
                       style: TextStyle(color: Colors.grey),
                     ),
-                    Text(
-                      "Đăng kí",
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
+
+
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/signup');
+
+                      },
+                      child: const Text(
+                        "Đăng kí",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
                 ),
+
 
                 const SizedBox(height: 20), // Khoảng trống dưới cùng
               ],
