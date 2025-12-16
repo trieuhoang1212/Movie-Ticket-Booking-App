@@ -6,3 +6,4 @@ node_modules
 Nội Dung
 SourceCode/Server/services/auth-service/srs/.env
 SourceCode/Server/api-gateway/.env
+SourceCode/Server/services/booking-service/srs/.env
