@@ -5,4 +5,4 @@ SourceCode/Server/node_modules
 node_modules
 Nội Dung
 SourceCode/Server/services/auth-service/srs/.env
-
+SourceCode/Server/api-gateway/.env
