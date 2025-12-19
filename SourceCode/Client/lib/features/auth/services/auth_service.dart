@@ -1,8 +1,12 @@
+// TODO Implement this library.
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
   // Hàm đăng ký
-  Future<String?> register({required String email, required String password}) async {
+  Future<String?> register({
+    required String email,
+    required String password,
+  }) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
@@ -15,7 +19,10 @@ class AuthService {
   }
 
   // Hàm đăng nhập
-  Future<String?> login({required String email, required String password}) async {
+  Future<String?> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,

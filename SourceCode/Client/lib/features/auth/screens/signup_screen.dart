@@ -59,10 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } else {
         // Thất bại: Hiện lỗi
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Lỗi: $error"),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text("Lỗi: $error"), backgroundColor: Colors.red),
         );
       }
     }
@@ -93,17 +90,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         children: [
           // 1. ẢNH NỀN
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/BG.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
           ),
 
           // 2. LỚP PHỦ MÀU
           Positioned.fill(
-            child: Container(
-              color: Colors.black.withOpacity(0.2),
-            ),
+            child: Container(color: Colors.black.withOpacity(0.2)),
           ),
 
           // 3. NỘI DUNG CHÍNH
@@ -150,7 +142,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintStyle: const TextStyle(color: Colors.white70),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.15),
-                        prefixIcon: const Icon(Icons.email, color: Colors.white),
+                        prefixIcon: const Icon(
+                          Icons.email,
+                          color: Colors.white,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -188,10 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         gradient: const LinearGradient(
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
-                          colors: [
-                            Color(0xFFFF3A3A),
-                            Color(0xFFCC0000),
-                          ],
+                          colors: [Color(0xFFFF3A3A), Color(0xFFCC0000)],
                         ),
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -203,24 +195,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        onPressed: _isLoading ? null : _handleSignUp, // Tắt nút khi đang load
+                        onPressed: _isLoading
+                            ? null
+                            : _handleSignUp, // Tắt nút khi đang load
                         child: _isLoading
                             ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
                             : const Text(
-                          "Đăng ký ngay",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                                "Đăng ký ngay",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
 
@@ -232,7 +226,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Expanded(child: Divider(color: Colors.grey)),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Text("Hoặc đăng ký với", style: TextStyle(color: Colors.grey)),
+                          child: Text(
+                            "Hoặc đăng ký với",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ),
                         Expanded(child: Divider(color: Colors.grey)),
                       ],
