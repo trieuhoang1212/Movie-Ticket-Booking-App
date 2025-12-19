@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'email_login_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -131,7 +132,13 @@ class LoginScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                      // Chuyển sang màn hình EmailLoginScreen
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const EmailLoginScreen()),
+                      );
+                      },
                       child: const Text(
                         "Log in with password",
                         style: TextStyle(
@@ -149,8 +156,8 @@ class LoginScreen extends StatelessWidget {
                 // REGISTER
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [ // ⚠️ QUAN TRỌNG: Đã xóa chữ 'const' ở đây
-                    const Text( // Chuyển 'const' vào đây
+                  children: [
+                    const Text(
                       "Chưa có tài khoản? ",
                       style: TextStyle(color: Colors.grey),
                     ),
