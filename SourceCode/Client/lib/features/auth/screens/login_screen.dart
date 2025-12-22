@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'signup_screen.dart';
+import 'email_login_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -7,19 +7,21 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: Stack(
         children: [
           //  ẢNH NỀN
           Positioned.fill(
-            child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/images/BG.png',
+              fit: BoxFit.cover,
+            ),
           ),
 
           // LỚP PHỦ MÀU ĐEN MỜ
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(
-                0.2,
-              ), // Độ mờ 60% (chỉnh số từ 0.0 đến 1.0)
+              color: Colors.black.withOpacity(0.2), // Độ mờ 60% (chỉnh số từ 0.0 đến 1.0)
             ),
           ),
 
@@ -28,6 +30,8 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+
+
                 const SizedBox(height: 100),
 
                 // LOGO
@@ -90,7 +94,10 @@ class LoginScreen extends StatelessWidget {
                     Expanded(child: Divider(color: Colors.grey)),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text("or", style: TextStyle(color: Colors.grey)),
+                      child: Text(
+                        "or",
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ),
                     Expanded(child: Divider(color: Colors.grey)),
                   ],
@@ -109,7 +116,10 @@ class LoginScreen extends StatelessWidget {
                       gradient: const LinearGradient(
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
-                        colors: [Color(0xFFFF3A3A), Color(0xFFCC0000)],
+                        colors: [
+                          Color(0xFFFF3A3A),
+                          Color(0xFFCC0000),
+                        ],
                       ),
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -122,7 +132,13 @@ class LoginScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                      // Chuyển sang màn hình EmailLoginScreen
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const EmailLoginScreen()),
+                      );
+                      },
                       child: const Text(
                         "Log in with password",
                         style: TextStyle(
@@ -138,32 +154,31 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // REGISTER
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SignUpScreen(),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        "Chưa có tài khoản? ",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      Text(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Chưa có tài khoản? ",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+
+
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/signup');
+
+                      },
+                      child: const Text(
                         "Đăng kí",
                         style: TextStyle(
                           color: Colors.red,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+
 
                 const SizedBox(height: 20), // Khoảng trống dưới cùng
               ],
@@ -192,7 +207,10 @@ class LoginScreen extends StatelessWidget {
           children: [
             Icon(icon, color: iconColor),
             const SizedBox(width: 12),
-            Text(text, style: const TextStyle(color: Colors.white)),
+            Text(
+              text,
+              style: const TextStyle(color: Colors.white),
+            ),
           ],
         ),
       ),
