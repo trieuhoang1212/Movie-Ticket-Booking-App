@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/movie_model.dart';
+import '../services/movie_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,47 +15,49 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentHotMovieIndex = 0;
   int _currentNowShowingIndex = 0;
 
-  // mock data
-  final List<Map<String, String>> hotMovies = [
-    {
-      "title": "Zootopia 2",
-      "image": "https://m.media-amazon.com/images/M/MV5BYjg1Mjc3MjQtMTZjNy00YWVlLWFhMWEtMWI3ZTgxYjJmNmRlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-      "duration": "1h 48m",
-      "genre": "Hài hước . Hoạt hình . Động vật",
-      "rating": "8.7/10"
-    },
-    {
-      "title": "Avatar 2",
-      "image": "https://m.media-amazon.com/images/M/MV5BYjhiNjBlODktY2ZiOC00YjVlLWFlNzAtNTVhNzM1YjI1NzMxXkEyXkFqcGdeQXVyMTEyMjM2NDc2._V1_.jpg",
-      "duration": "3h 12m",
-      "genre": "Hành động . Viễn tưởng",
-      "rating": "9.0/10"
-    },
-  ];
+  final MovieService _movieService = MovieService();
 
-  final List<Map<String, String>> nowShowingMovies = [
-    {
-      "title": "Truy tìm Long Diên Hương",
-      "image": "https://cdn.galaxycine.vn/media/2025/1/15/men-in-black-500_1736932475681.jpg",
-      "duration": "1h 48m",
-      "genre": "Hài hước . Hành động",
-      "rating": "8.0/10"
-    },
-    {
-      "title": "Truy tìm Long Diên Hương",
-      "image": "https://cdn.galaxycine.vn/media/2025/1/15/men-in-black-500_1736932475681.jpg",
-      "duration": "1h 48m",
-      "genre": "Hài hước . Hành động",
-      "rating": "8.0/10"
-    },
-    {
-      "title": "Truy tìm Long Diên Hương",
-      "image": "https://cdn.galaxycine.vn/media/2025/1/15/men-in-black-500_1736932475681.jpg",
-      "duration": "1h 48m",
-      "genre": "Hài hước . Hành động",
-      "rating": "8.0/10"
-    },
-  ];
+  // Dữ liệu phim từ API
+  List<Movie> hotMovies = [];
+  List<Movie> nowShowingMovies = [];
+
+  // Trạng thái loading
+  bool isLoadingHotMovies = true;
+  bool isLoadingNowShowingMovies = true;
+
+  // Thông báo lỗi
+  String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMovies();
+  }
+
+  // Load dữ liệu phim từ API
+  Future<void> _loadMovies() async {
+    try {
+      // Load phim đang hot (now_showing)
+      final hot = await _movieService.getHotMovies();
+
+      // Load phim đang chiếu (cũng là now_showing, bạn có thể dùng coming_soon nếu muốn)
+      final nowShowing = await _movieService.getMovies(status: 'now_showing');
+
+      setState(() {
+        hotMovies = hot;
+        nowShowingMovies = nowShowing;
+        isLoadingHotMovies = false;
+        isLoadingNowShowingMovies = false;
+        errorMessage = null;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingHotMovies = false;
+        isLoadingNowShowingMovies = false;
+        errorMessage = 'Không thể tải dữ liệu phim: $e';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,57 +66,74 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/BG.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
           ),
-
 
           Positioned.fill(
-            child: Container(
-              color: const Color(0xFF151720).withOpacity(0.4),
-            ),
+            child: Container(color: const Color(0xFF151720).withOpacity(0.4)),
           ),
 
-
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 48),
+            child: errorMessage != null
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          errorMessage!,
+                          style: const TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _loadMovies,
+                          child: const Text('Thử lại'),
+                        ),
+                      ],
+                    ),
+                  )
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeader(),
+                        const SizedBox(height: 48),
 
-                  // Phim hot
-                  _buildSectionTitle("Phim đang hot"),
-                  const SizedBox(height: 16),
-                  _buildMovieSlider(
-                    hotMovies,
-                    currentIndex: _currentHotMovieIndex,
-                    onPageChanged: (index) {
-                      setState(() => _currentHotMovieIndex = index);
-                    },
+                        // Phim hot
+                        _buildSectionTitle("Phim đang hot"),
+                        const SizedBox(height: 16),
+                        isLoadingHotMovies
+                            ? const Center(child: CircularProgressIndicator())
+                            : _buildMovieSlider(
+                                hotMovies,
+                                currentIndex: _currentHotMovieIndex,
+                                onPageChanged: (index) {
+                                  setState(() => _currentHotMovieIndex = index);
+                                },
+                              ),
+
+                        const SizedBox(height: 48),
+
+                        // Phim đang chiếu
+                        _buildSectionTitle("Phim đang chiếu"),
+                        const SizedBox(height: 16),
+                        isLoadingNowShowingMovies
+                            ? const Center(child: CircularProgressIndicator())
+                            : _buildMovieSlider(
+                                nowShowingMovies,
+                                currentIndex: _currentNowShowingIndex,
+                                onPageChanged: (index) {
+                                  setState(
+                                    () => _currentNowShowingIndex = index,
+                                  );
+                                },
+                              ),
+
+                        const SizedBox(height: 80),
+                      ],
+                    ),
                   ),
-
-                  const SizedBox(height: 48),
-
-                  // Phim đang chiếu
-                  _buildSectionTitle("Phim đang chiếu"),
-                  const SizedBox(height: 16),
-                  _buildMovieSlider(
-                    nowShowingMovies,
-                    currentIndex: _currentNowShowingIndex,
-                    onPageChanged: (index) {
-                      setState(() => _currentNowShowingIndex = index);
-                    },
-                  ),
-
-                  const SizedBox(height: 80),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -126,7 +147,11 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         const Text(
           "Xin Chào, User",
-          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const CircleAvatar(
           radius: 20,
@@ -139,15 +164,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 
   Widget _buildMovieSlider(
-      List<Map<String, String>> movies, {
-        required int currentIndex,
-        required Function(int) onPageChanged,
-      }) {
+    List<Movie> movies, {
+    required int currentIndex,
+    required Function(int) onPageChanged,
+  }) {
+    if (movies.isEmpty) {
+      return const Center(
+        child: Text('Không có phim nào', style: TextStyle(color: Colors.white)),
+      );
+    }
+
     return Column(
       children: [
         SizedBox(
@@ -162,31 +197,69 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: const EdgeInsets.only(right: 8),
                 child: Stack(
                   children: [
-
                     Positioned.fill(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
-                        child: Image.network(
-                          movie["image"]!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (c, o, s) => Container(color: Colors.grey),
-                        ),
+                        child:
+                            movie.posterUrl != null &&
+                                movie.posterUrl!.isNotEmpty
+                            ? Image.network(
+                                movie.posterUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (c, o, s) => Container(
+                                  color: Colors.grey,
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.movie,
+                                      color: Colors.white,
+                                      size: 50,
+                                    ),
+                                  ),
+                                ),
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        color: Colors.grey,
+                                        child: const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+                                    },
+                              )
+                            : Container(
+                                color: Colors.grey,
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.movie,
+                                    color: Colors.white,
+                                    size: 50,
+                                  ),
+                                ),
+                              ),
                       ),
                     ),
 
                     Positioned(
-                      top: 16, right: 16,
+                      top: 16,
+                      right: 16,
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.favorite_border, color: Colors.white, size: 20),
+                        child: const Icon(
+                          Icons.favorite_border,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     ),
                     Positioned(
-                      bottom: 16, left: 16, right: 16,
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -196,36 +269,79 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(movie["title"]!, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                            Text(
+                              movie.title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             const SizedBox(height: 4),
-                            Text(movie["duration"]!, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                            Text(
+                              movie.durationFormatted,
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                              ),
+                            ),
                             const SizedBox(height: 4),
-                            Text(movie["genre"]!, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                            Text(
+                              movie.genreFormatted,
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             const SizedBox(height: 16),
                             Row(
                               children: [
-                                const Icon(Icons.star, color: Color(0xFFFF4444), size: 18),
+                                const Icon(
+                                  Icons.star,
+                                  color: Color(0xFFFF4444),
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 4),
-                                Text(movie["rating"]!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                Text(
+                                  movie.ratingFormatted,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                                 const Spacer(),
                                 ElevatedButton(
                                   onPressed: () {},
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFFFF4444),
                                     foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 10,
+                                    ),
                                   ),
                                   child: Row(
                                     children: const [
                                       Icon(Icons.play_circle_outline, size: 18),
                                       SizedBox(width: 4),
-                                      Text("Đặt vé ngay", style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Text(
+                                        "Đặt vé ngay",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                )
+                                ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -237,7 +353,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 16),
-
 
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
