@@ -2,6 +2,7 @@ const Booking = require("../repositories/booking.model");
 const Showtime = require("../repositories/showtime.model");
 const Seat = require("../repositories/seat.model");
 const Movie = require("../repositories/movie.model");
+const { notifyBookingConfirmed } = require("../services/notification.service");
 
 // Tạo booking mới
 exports.createBooking = async (req, res) => {
@@ -66,11 +67,30 @@ exports.createBooking = async (req, res) => {
       }
     );
 
+    // Populate booking để lấy thông tin đầy đủ
+    const populatedBooking = await booking.populate({
+      path: "showtimeId",
+      populate: { path: "movieId" },
+    });
+
+    // Gửi thông báo đặt vé thành công (async, không chờ để không làm chậm response)
+    notifyBookingConfirmed({
+      userId,
+      _id: booking._id,
+      movieTitle: populatedBooking.showtimeId.movieId.title,
+      showtime: populatedBooking.showtimeId.startTime,
+      seats: bookingSeats,
+      cinema: populatedBooking.showtimeId.cinema || "Cinema",
+      totalAmount,
+    }).catch((err) =>
+      console.error("⚠️ Failed to send booking notification:", err.message)
+    );
+
     res.status(201).json({
       success: true,
       message: "Booking created successfully",
       data: {
-        booking: await booking.populate("showtimeId"),
+        booking: populatedBooking,
       },
     });
   } catch (error) {
@@ -197,6 +217,32 @@ exports.getMovies = async (req, res) => {
     res.status(200).json({
       success: true,
       data: { movies },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+// Lấy chi tiết 1 phim
+exports.getMovieById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const movie = await Movie.findById(id);
+
+    if (!movie) {
+      return res.status(404).json({
+        success: false,
+        message: "Movie not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { movie },
     });
   } catch (error) {
     res.status(500).json({

@@ -2,11 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/database");
-const bookingRoutes = require("./routes/booking.routes");
+const { initializeFirebase } = require("./config/firebase");
+const authRoutes = require("./routes/auth.routes");
 const { swaggerUi, swaggerSpec } = require("./config/swagger");
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -17,13 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
-app.use("/api/bookings", bookingRoutes);
+app.use("/api/auth", authRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Booking Service is running",
+    message: "Auth Service is running",
     timestamp: new Date().toISOString(),
   });
 });
@@ -32,10 +33,10 @@ app.get("/health", (req, res) => {
 const startServer = async () => {
   try {
     await connectDB();
+    initializeFirebase(); // Khởi tạo Firebase
     app.listen(PORT, () => {
-      console.log(`Booking Service is running on port ${PORT}`);
+      console.log(`Auth Service is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
-      console.log(`Swagger Docs: http://localhost:${PORT}/api-docs`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

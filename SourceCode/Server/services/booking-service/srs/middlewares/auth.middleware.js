@@ -1,8 +1,8 @@
-const admin = require("firebase-admin");
+const axios = require("axios");
 
 /**
- * Middleware xác thực Firebase ID Token
- * Verify token từ Firebase Authentication
+ * Middleware xác thực JWT Token
+ * Gọi sang Auth Service để verify token
  */
 const authenticateToken = async (req, res, next) => {
   try {
@@ -16,23 +16,30 @@ const authenticateToken = async (req, res, next) => {
       });
     }
 
-    // Verify Firebase ID Token
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    // Gọi sang Auth Service để verify token
+    const authServiceUrl =
+      process.env.AUTH_SERVICE_URL || "http://auth-service:3001";
+    const response = await axios.post(
+      `${authServiceUrl}/api/auth/verify`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
-    // Gắn user info vào request
-    req.user = {
-      id: decodedToken.uid,
-      email: decodedToken.email,
-      name: decodedToken.name || decodedToken.email,
-    };
-
-    next();
+    if (response.data.success) {
+      req.user = response.data.data.user;
+      next();
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token",
+      });
+    }
   } catch (error) {
-    console.error("Token verification failed:", error.message);
     return res.status(401).json({
       success: false,
       message: "Invalid or expired token",
-      error: error.message,
     });
   }
 };
