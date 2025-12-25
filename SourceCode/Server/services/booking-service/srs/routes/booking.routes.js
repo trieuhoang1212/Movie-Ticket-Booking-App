@@ -134,6 +134,26 @@ router.get("/movies", bookingController.getMovies);
 
 /**
  * @swagger
+ * /api/bookings/movies/{id}:
+ *   get:
+ *     summary: Get movie by ID
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Movie details
+ *       404:
+ *         description: Movie not found
+ */
+router.get("/movies/:id", bookingController.getMovieById);
+
+/**
+ * @swagger
  * /api/bookings/movies/{movieId}/showtimes:
  *   get:
  *     summary: Get showtimes by movie ID
