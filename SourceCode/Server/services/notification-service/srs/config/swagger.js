@@ -22,7 +22,12 @@ const options = {
           type: "http",
           scheme: "bearer",
           bearerFormat: "JWT",
-        }, 
+        },
+        apiKey: {
+          type: "apiKey",
+          in: "header",
+          name: "x-api-key",
+        },
       },
     },
   },
