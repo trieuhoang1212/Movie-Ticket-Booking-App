@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'movie_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -209,7 +210,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text(movie["rating"]!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                 const Spacer(),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MovieDetailScreen(
+                                            movieData: movie,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFFFF4444),
                                     foregroundColor: Colors.white,
