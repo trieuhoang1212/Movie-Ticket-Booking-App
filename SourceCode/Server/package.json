@@ -4,6 +4,7 @@
     "firebase-admin": "^13.6.0",
     "mongoose": "^9.0.1",
     "next": "^14.2.33",
+    "swagger-ui-express": "^5.0.1",
     "vnpay": "^2.4.4"
   }
 }

@@ -1,13 +1,12 @@
 # Use Node.js 20 Alpine (lighter and exists)
-FROM node:20-alpine
-
+FROM node:20-alpine3.20
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
 # Install production dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Copy all source code (JavaScript, không cần build)
 COPY . .

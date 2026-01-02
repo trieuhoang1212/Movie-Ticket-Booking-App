@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/database");
 const bookingRoutes = require("./routes/booking.routes");
-const { swaggerUi, swaggerSpec } = require("./config/swagger");
+
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -14,10 +14,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Swagger Documentation
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
-app.use("/api/bookings", bookingRoutes);
+app.use("/", bookingRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -34,8 +34,7 @@ const startServer = async () => {
     await connectDB();
     app.listen(PORT, () => {
       console.log(`Booking Service is running on port ${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV}`);
-      console.log(`Swagger Docs: http://localhost:${PORT}/api-docs`);
+      // console.log(`Swagger Docs: http://localhost:${PORT}/api-docs`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

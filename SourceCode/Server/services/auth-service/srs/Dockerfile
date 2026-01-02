@@ -1,5 +1,5 @@
 # Use Node.js 20 Alpine (lighter and exists)
-FROM node:20-alpine
+FROM node:20-alpine3.20
 
 WORKDIR /app
 
