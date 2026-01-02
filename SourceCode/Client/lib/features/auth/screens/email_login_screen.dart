@@ -74,7 +74,6 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
                   children: [
-                    // LOGO nhỏ hơn chút
                     Container(
                       width: 120, height: 120,
                       decoration: BoxDecoration(
@@ -97,9 +96,11 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         fillColor: Colors.white.withOpacity(0.15),
                         prefixIcon: const Icon(Icons.email, color: Colors.white),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     // INPUT PASSWORD
                     TextField(
@@ -113,6 +114,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         fillColor: Colors.white.withOpacity(0.15),
                         prefixIcon: const Icon(Icons.lock, color: Colors.white),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                     const SizedBox(height: 30),

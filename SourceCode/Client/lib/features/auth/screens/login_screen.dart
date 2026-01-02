@@ -21,7 +21,7 @@ class LoginScreen extends StatelessWidget {
           // LỚP PHỦ MÀU ĐEN MỜ
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.2), // Độ mờ 60% (chỉnh số từ 0.0 đến 1.0)
+              color: Colors.black.withOpacity(0.1),
             ),
           ),
 

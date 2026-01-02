@@ -113,16 +113,28 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       // Nút Xem Trailer & Đánh giá
                       Row(
                         children: [
-                          ElevatedButton.icon(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryRed,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          Container(
+                            decoration: BoxDecoration(
+                              // 1. Tạo Gradient ở đây
+                              gradient: LinearGradient(
+                                colors: [Colors.red, Colors.red.shade900],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            icon: const Icon(Icons.play_circle_fill),
-                            label: const Text("Xem Trailer", style: TextStyle(fontWeight: FontWeight.bold)),
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              ),
+                              icon: const Icon(Icons.play_circle_fill),
+                              label: const Text("Xem Trailer", style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
                           ),
                           const Spacer(),
                           const Icon(Icons.star, color: Color(0xFFFF4444), size: 24),
@@ -184,27 +196,48 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: darkBackground,
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10, offset: const Offset(0, -5))],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: 10,
+                offset: const Offset(0, -5)
+            )
+          ],
         ),
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BookingScreen(
-                  movieData: widget.movieData,
-                ),
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryRed,
-            foregroundColor: Colors.white,
-            minimumSize: const Size(double.infinity, 56),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        child: Container(
+          width: double.infinity,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryRed, Colors.red.shade900],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
           ),
-          child: const Text("ĐẶT GHẾ"),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookingScreen(
+                    movieData: widget.movieData,
+                  ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              "ĐẶT GHẾ",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
         ),
       ),
     );
@@ -309,7 +342,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2D3A), // Màu nền tối hơn nền chính một chút
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
