@@ -36,7 +36,7 @@ class MovieService {
         throw Exception('Failed to load movies: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching movies: $e');
+      ('Error fetching movies: $e');
       throw Exception('Error fetching movies: $e');
     }
   }
@@ -73,7 +73,7 @@ class MovieService {
         throw Exception('Failed to load movie: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching movie details: $e');
+      ('Error fetching movie details: $e');
       throw Exception('Error fetching movie details: $e');
     }
   }

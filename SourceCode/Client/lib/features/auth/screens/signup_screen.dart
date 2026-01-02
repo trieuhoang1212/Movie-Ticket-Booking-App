@@ -95,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
           // 2. LỚP PHỦ MÀU
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.2)),
+            child: Container(color: Colors.black.withValues(alpha: 0.2)),
           ),
 
           // 3. NỘI DUNG CHÍNH
@@ -141,7 +141,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Nhập Email",
                         hintStyle: const TextStyle(color: Colors.white70),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.15),
+                        fillColor: Colors.white.withValues(alpha: 0.15),
                         prefixIcon: const Icon(
                           Icons.email,
                           color: Colors.white,
@@ -164,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Nhập Mật khẩu",
                         hintStyle: const TextStyle(color: Colors.white70),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.15),
+                        fillColor: Colors.white.withValues(alpha: 0.15),
                         prefixIcon: const Icon(Icons.lock, color: Colors.white),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -290,7 +290,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(icon, color: color, size: 30),

@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Positioned.fill(
-            child: Container(color: const Color(0xFF151720).withOpacity(0.4)),
+            child: Container(color: const Color(0xFF151720).withValues(alpha: 0.4)),
           ),
 
           SafeArea(
@@ -246,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1F222A).withOpacity(0.95),
+                          color: const Color(0xFF1F222A).withValues(alpha: 0.95),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Column(
@@ -378,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF151720).withOpacity(0.5),
+        color: const Color(0xFF151720).withValues(alpha: 0.5),
         border: const Border(top: BorderSide(color: Colors.white10)),
       ),
       child: Row(
