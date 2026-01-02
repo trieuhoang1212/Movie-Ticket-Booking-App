@@ -32,6 +32,7 @@ const middlewares = {
       "/api/booking/movies",
       "/api/booking/showtimes",
       "/api/user/health",
+      "/health", // <-- Đã thêm endpoint này
     ];
 
     const isPublicEndpoint = publicEndpoints.some((endpoint) =>
@@ -39,13 +40,21 @@ const middlewares = {
     );
 
     if (isPublicEndpoint) {
+      next();
     } else {
-      const authenData = await authenticationService.authenticate(req, next);
-      // set user information that  authenticated
-      console.log(`Authenticating...`, authenData);
-      req.headers["__user_info"] = JSON.stringify(authenData);
+      try {
+        // Gọi service không truyền next nữa
+        const authenData = await authenticationService.authenticate(req);
+        // set user information that authenticated
+        console.log(`Authenticating...`, authenData);
+        req.headers["__user_info"] = JSON.stringify(authenData);
+        next();
+      } catch (error) {
+        // Bắt lỗi tại đây và DỪNG LẠI (return)
+        next(error);
+        return;
+      }
     }
-    next();
   },
   logger: function (req: Request, res: Response, next) {
     // Logging request, user, body, request...
@@ -98,6 +107,10 @@ const middlewares = {
     console.log("-- Going to handle exception --");
     console.log(err);
 
+    if (res.headersSent) {
+      return next(err);
+    }
+
     if (err instanceof AuthenticationError) {
       res.status(401).json(err);
     } else {
@@ -108,7 +121,7 @@ const middlewares = {
       };
       res.status(500).json(errorBody);
     }
-    next();
+    // KHÔNG gọi next() ở đây nữa vì đã gửi response rồi
   },
 };
 
