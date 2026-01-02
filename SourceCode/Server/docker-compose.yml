@@ -19,7 +19,7 @@ services:
   # Auth Service
   auth-service:
     build:
-      context: ./auth-service/srs
+      context: ./services/auth-service/srs
       dockerfile: Dockerfile
     container_name: auth-service
     restart: unless-stopped
@@ -28,9 +28,13 @@ services:
     environment:
       - PORT=3001
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_auth?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
       - JWT_SECRET=your-super-secret-jwt-key-change-in-production
       - JWT_EXPIRES_IN=7d
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_PRIVATE_KEY_ID=${FIREBASE_PRIVATE_KEY_ID}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
     depends_on:
       - mongodb
     networks:
@@ -51,7 +55,7 @@ services:
   # Booking Service
   booking-service:
     build:
-      context: ./booking-service/srs
+      context: ./services/booking-service/srs
       dockerfile: Dockerfile
     container_name: booking-service
     restart: unless-stopped
@@ -60,16 +64,33 @@ services:
     environment:
       - PORT=3002
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_booking?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRES_IN=7d
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3005
+      - INTERNAL_API_KEY=internal-secret-key
     depends_on:
       - mongodb
+      - notification-service
     networks:
       - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3002/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # User Service
   user-service:
     build:
-      context: ./user-service/srs
+      context: ./services/user-service/srs
       dockerfile: Dockerfile
     container_name: user-service
     restart: unless-stopped
@@ -78,16 +99,29 @@ services:
     environment:
       - PORT=3003
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_user?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
     depends_on:
       - mongodb
     networks:
       - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3003/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # Payment Service
   payment-service:
     build:
-      context: ./payment-service/srs
+      context: ./services/payment-service/srs
       dockerfile: Dockerfile
     container_name: payment-service
     restart: unless-stopped
@@ -96,18 +130,34 @@ services:
     environment:
       - PORT=3004
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_payment?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
       - VNPAY_TMN_CODE=your_vnpay_code
       - VNPAY_SECRET_KEY=your_vnpay_secret
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3005
+      - BOOKING_SERVICE_URL=http://booking-service:3002
+      - INTERNAL_API_KEY=internal-secret-key
     depends_on:
       - mongodb
+      - notification-service
     networks:
       - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3004/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # Notification Service
   notification-service:
     build:
-      context: ./notification-service/srs
+      context: ./services/notification-service/srs
       dockerfile: Dockerfile
     container_name: notification-service
     restart: unless-stopped
@@ -116,16 +166,35 @@ services:
     environment:
       - PORT=3005
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/movie_booking_notification?authSource=admin
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRES_IN=7d
+      - INTERNAL_API_KEY=internal-secret-key
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_PRIVATE_KEY_ID=${FIREBASE_PRIVATE_KEY_ID}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
     depends_on:
       - mongodb
     networks:
       - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3005/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # API Gateway
   api-gateway:
     build:
-      context: ../api-gateway
+      context: ./api-gateway
       dockerfile: Dockerfile
     container_name: api-gateway
     restart: unless-stopped
