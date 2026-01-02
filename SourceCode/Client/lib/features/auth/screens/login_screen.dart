@@ -21,7 +21,7 @@ class LoginScreen extends StatelessWidget {
           // LỚP PHỦ MÀU ĐEN MỜ
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.2), // Độ mờ 60% (chỉnh số từ 0.0 đến 1.0)
+              color: Colors.black.withValues(alpha: 0.2), // Độ mờ 60% (chỉnh số từ 0.0 đến 1.0)
             ),
           ),
 
@@ -199,7 +199,7 @@ class LoginScreen extends StatelessWidget {
       child: Container(
         height: 44,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(

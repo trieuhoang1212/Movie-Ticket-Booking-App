@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../../home/screens/home_screen.dart';
+
 class EmailLoginScreen extends StatefulWidget {
   const EmailLoginScreen({super.key});
 
@@ -16,7 +17,9 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
 
   void _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vui lòng nhập đủ thông tin")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Vui lòng nhập đủ thông tin")),
+      );
       return;
     }
     setState(() => _isLoading = true);
@@ -32,19 +35,21 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
       if (error == null) {
         // 1. Thông báo thành công
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Đăng nhập thành công!"), backgroundColor: Colors.green)
+          const SnackBar(
+            content: Text("Đăng nhập thành công!"),
+            backgroundColor: Colors.green,
+          ),
         );
 
         // 2. Chuyển hướng và XÓA các màn hình trước đó (Login, Intro...)
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false, // Điều kiện false nghĩa là xóa sạch lịch sử stack
+          (route) => false, // Điều kiện false nghĩa là xóa sạch lịch sử stack
         );
-
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Lỗi: $error"), backgroundColor: Colors.red)
+          SnackBar(content: Text("Lỗi: $error"), backgroundColor: Colors.red),
         );
       }
     }
@@ -65,8 +70,12 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
       body: Stack(
         children: [
           // Background giữ nguyên cho đồng bộ
-          Positioned.fill(child: Image.asset('assets/images/BG.png', fit: BoxFit.cover)),
-          Positioned.fill(child: Container(color: Colors.black.withOpacity(0.2))),
+          Positioned.fill(
+            child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
+          ),
+          Positioned.fill(
+            child: Container(color: Colors.black.withValues(alpha: 0.2)),
+          ),
 
           SafeArea(
             child: Center(
@@ -76,14 +85,25 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   children: [
                     // LOGO nhỏ hơn chút
                     Container(
-                      width: 120, height: 120,
+                      width: 120,
+                      height: 120,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        image: const DecorationImage(image: AssetImage('assets/images/logo.png'), fit: BoxFit.cover),
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/logo.png'),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),
-                    const Text("Đăng nhập", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Đăng nhập",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 30),
 
                     // INPUT EMAIL
@@ -94,9 +114,15 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         hintText: "Email",
                         hintStyle: const TextStyle(color: Colors.white70),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.15),
-                        prefixIcon: const Icon(Icons.email, color: Colors.white),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        fillColor: Colors.white.withValues(alpha: 0.15),
+                        prefixIcon: const Icon(
+                          Icons.email,
+                          color: Colors.white,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -110,9 +136,12 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         hintText: "Mật khẩu",
                         hintStyle: const TextStyle(color: Colors.white70),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.15),
+                        fillColor: Colors.white.withValues(alpha: 0.15),
                         prefixIcon: const Icon(Icons.lock, color: Colors.white),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -124,12 +153,23 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFCC0000), // Màu đỏ
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         onPressed: _isLoading ? null : _handleLogin,
                         child: _isLoading
-                            ? const CircularProgressIndicator(color: Colors.white)
-                            : const Text("Đăng nhập", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text(
+                                "Đăng nhập",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                   ],

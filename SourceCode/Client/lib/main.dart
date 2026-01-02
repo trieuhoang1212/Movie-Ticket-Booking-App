@@ -11,10 +11,10 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    print("✅ KẾT NỐI FIREBASE THÀNH CÔNG!");
+    ("✅ KẾT NỐI FIREBASE THÀNH CÔNG!");
   } catch (e) {
     // Nếu lỗi thì in ra Console chứ không làm sập app
-    print("❌ LỖI KẾT NỐI FIREBASE: $e");
+    ("❌ LỖI KẾT NỐI FIREBASE: $e");
   }
 
   // Chạy App dù Firebase có lỗi hay không
