@@ -114,9 +114,44 @@ exports.getMyBookings = async (req, res) => {
       })
       .sort({ createdAt: -1 });
 
+    // Transform để match Flutter model
+    const transformedBookings = bookings.map((booking) => {
+      const showtime = booking.showtimeId;
+      const movie = showtime?.movieId;
+
+      return {
+        _id: booking._id,
+        userId: booking.userId,
+        showtime: {
+          movieId: movie?._id,
+          movieTitle: movie?.title || "Unknown Movie",
+          moviePoster: movie?.posterUrl || "",
+          theaterName: showtime?.cinema || "Unknown Theater",
+          roomName: showtime?.room || "Unknown Room",
+          startTime: showtime?.startTime,
+          endTime: showtime?.endTime,
+          screenType: showtime?.screenType || "2D",
+        },
+        seats: (booking.seats || []).map((seat) => ({
+          row: seat.seatNumber?.charAt(0) || "A",
+          number: parseInt(seat.seatNumber?.substring(1)) || 0,
+          type: seat.type,
+          price: seat.price,
+        })),
+        totalAmount: booking.totalAmount,
+        status: booking.status,
+        paymentMethod: booking.paymentMethod,
+        paymentStatus: booking.paymentStatus,
+        bookingCode: booking.bookingCode,
+        qrCode: booking.qrCode,
+        createdAt: booking.createdAt,
+        updatedAt: booking.updatedAt,
+      };
+    });
+
     res.status(200).json({
       success: true,
-      data: { bookings },
+      data: { bookings: transformedBookings },
     });
   } catch (error) {
     res.status(500).json({

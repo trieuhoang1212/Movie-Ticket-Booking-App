@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/database");
+const { initializeFirebase } = require("./config/firebase");
 const bookingRoutes = require("./routes/booking.routes");
-
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -31,6 +31,9 @@ app.get("/health", (req, res) => {
 // Kết nối đến database và khởi động server
 const startServer = async () => {
   try {
+    // Initialize Firebase Admin
+    initializeFirebase();
+
     await connectDB();
     app.listen(PORT, () => {
       console.log(`Booking Service is running on port ${PORT}`);
