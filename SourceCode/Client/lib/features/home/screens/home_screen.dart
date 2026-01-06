@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'movie_detail_screen.dart';
 import 'favorite_screen.dart';
+import 'my_tickets_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _currentHotMovieIndex = 0;
   int _currentNowShowingIndex = 0;
-  // --- CHÈN ĐOẠN NÀY VÀO ---
   // Danh sách lưu phim yêu thích
   final List<Map<String, String>> _favoriteMovies = [];
   void _toggleFavorite(Map<String, String> movie) {
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // --- 2. DANH SÁCH CÁC MÀN HÌNH TƯƠNG ỨNG VỚI TAB ---
     final List<Widget> pages = [
       _buildHomeContent(),
-      const Center(child: Text("Vé của tôi", style: TextStyle(color: Colors.white))), // Index 1
+      const MyTicketsScreen(),
       const Center(child: Text("Tìm kiếm", style: TextStyle(color: Colors.white))),   // Index 2
       FavoriteScreen(favoriteMovies: _favoriteMovies),
       const Center(child: Text("Thông báo", style: TextStyle(color: Colors.white))),  // Index 4
@@ -243,7 +243,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(width: 4),
                                 Text(movie["rating"]!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                 const Spacer(),
-                                // Bọc nút trong Container để tạo Gradient
                                 Container(
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(
