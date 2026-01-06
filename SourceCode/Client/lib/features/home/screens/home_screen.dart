@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/movie_model.dart';
 import '../services/movie_service.dart';
+import 'my_tickets_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,7 +71,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Positioned.fill(
-            child: Container(color: const Color(0xFF151720).withValues(alpha: 0.4)),
+            child: Container(
+              color: const Color(0xFF151720).withValues(alpha: 0.4),
+            ),
           ),
 
           SafeArea(
@@ -263,7 +266,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1F222A).withValues(alpha: 0.95),
+                          color: const Color(
+                            0xFF1F222A,
+                          ).withValues(alpha: 0.95),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Column(
@@ -397,7 +402,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildNavItem(IconData icon, int index) {
     final isSelected = _selectedIndex == index;
     return IconButton(
-      onPressed: () => setState(() => _selectedIndex = index),
+      onPressed: () {
+        setState(() => _selectedIndex = index);
+        // Navigate đến MyTicketsScreen khi ấn vào icon vé (index 1)
+        if (index == 1) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MyTicketsScreen()),
+          );
+        }
+      },
       icon: Icon(
         icon,
         color: isSelected ? Colors.white : Colors.grey,
