@@ -161,7 +161,7 @@ class FavoriteScreen extends StatelessWidget {
               ),
             ),
 
-            // Icon Tim (luôn hiển thị màu đỏ vì đây là màn hình yêu thích)
+            // Icon Tim
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [

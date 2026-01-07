@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     },
     {
       "title": "Avatar 2",
-      "image": "https://m.media-amazon.com/images/M/MV5BYjhiNjBlODktY2ZiOC00YjVlLWFlNzAtNTVhNzM1YjI1NzMxXkEyXkFqcGdeQXVyMTEyMjM2NDc2._V1_.jpg",
+      "image": "https://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/ac7a3d156804097.636d454cb6e24.jpg",
       "duration": "3h 12m",
       "genre": "Hành động . Viễn tưởng",
       "rating": "9.0/10"
@@ -249,12 +249,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       begin: Alignment.centerLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        Color(0xFFFF4444), // Màu đỏ tươi (Gốc)
-                                        Color(0xFFCC0000), // Màu đỏ đậm hơn (Để tạo chiều sâu)
-                                        // Hoặc bạn có thể dùng [Color(0xFFFF4444), Colors.orange] nếu muốn rực rỡ
+                                        Color(0xFFFF4444),
+                                        Color(0xFFCC0000),
                                       ],
                                     ),
-                                    borderRadius: BorderRadius.circular(20), // Bo góc phải khớp với nút
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: ElevatedButton(
                                     onPressed: () {
@@ -268,9 +267,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.transparent, // QUAN TRỌNG: Để lộ màu gradient bên dưới
-                                      shadowColor: Colors.transparent,     // Tắt bóng đen mặc định (nếu muốn đẹp hơn)
-                                      foregroundColor: Colors.white,       // Màu chữ/icon
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                     ),

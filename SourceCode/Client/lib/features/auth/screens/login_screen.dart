@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'email_login_screen.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -165,8 +166,10 @@ class LoginScreen extends StatelessWidget {
 
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/signup');
-
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                        );
                       },
                       child: const Text(
                         "Đăng kí",
