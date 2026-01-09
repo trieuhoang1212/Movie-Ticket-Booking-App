@@ -43,11 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
   // Load dữ liệu phim từ API
   Future<void> _loadMovies() async {
     try {
-      // Load phim đang hot (now_showing)
+      // Load phim đang hot (now_showing + isHot = true)
       final hot = await _movieService.getHotMovies();
 
-      // Load phim đang chiếu (cũng là now_showing, bạn có thể dùng coming_soon nếu muốn)
-      final nowShowing = await _movieService.getMovies(status: 'now_showing');
+      // Load tất cả phim đang chiếu (now_showing)
+      final nowShowing = await _movieService.getNowShowingMovies();
 
       setState(() {
         hotMovies = hot;
@@ -221,6 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                       builder: (context) => MovieDetailScreen(
                         movieData: {
+                          'id': movie.id,
                           'title': movie.title,
                           'image': movie.posterUrl ?? '',
                           'duration': movie.durationFormatted,
@@ -256,8 +257,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   loadingBuilder:
                                       (context, child, loadingProgress) {
-                                        if (loadingProgress == null)
+                                        if (loadingProgress == null) {
                                           return child;
+                                        }
                                         return Container(
                                           color: Colors.grey,
                                           child: const Center(
@@ -363,6 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           builder: (context) =>
                                               MovieDetailScreen(
                                                 movieData: {
+                                                  'id': movie.id,
                                                   'title': movie.title,
                                                   'image':
                                                       movie.posterUrl ?? '',

@@ -230,6 +230,10 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     final seatCount = booking.seats.length;
     final seatText = '$seatCount chỗ ngồi';
 
+    // Kiểm tra xem có thể hủy vé không (chỉ cho phép hủy vé pending/confirmed)
+    final canCancel =
+        booking.status == 'pending' || booking.status == 'confirmed';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(12),
@@ -237,92 +241,209 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
         color: const Color(0xFF1F222A), // Màu nền Card
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
         children: [
-          // Ảnh Poster
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: booking.showtime.movie.posterUrl != null
-                ? Image.network(
-                    booking.showtime.movie.posterUrl!,
-                    width: 100,
-                    height: 120,
-                    fit: BoxFit.cover,
-                    errorBuilder: (c, o, s) => Container(
-                      width: 100,
-                      height: 120,
-                      color: Colors.grey,
-                      child: const Icon(Icons.movie, color: Colors.white),
-                    ),
-                  )
-                : Container(
-                    width: 100,
-                    height: 120,
-                    color: Colors.grey,
-                    child: const Icon(Icons.movie, color: Colors.white),
-                  ),
-          ),
-          const SizedBox(width: 16),
-          // Thông tin vé
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 4),
-                // Tên phim
-                Text(
-                  booking.showtime.movie.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 12),
-
-                // Rạp phim
-                _buildInfoRow(
-                  Icons.location_on_outlined,
-                  booking.showtime.cinema,
-                ),
-                const SizedBox(height: 8),
-
-                // Ngày chiếu
-                _buildInfoRow(Icons.calendar_today_outlined, formattedDate),
-                const SizedBox(height: 8),
-
-                // Giờ và Số ghế
-                Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Ảnh Poster
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: booking.showtime.movie.posterUrl != null
+                    ? Image.network(
+                        booking.showtime.movie.posterUrl!,
+                        width: 100,
+                        height: 120,
+                        fit: BoxFit.cover,
+                        errorBuilder: (c, o, s) => Container(
+                          width: 100,
+                          height: 120,
+                          color: Colors.grey,
+                          child: const Icon(Icons.movie, color: Colors.white),
+                        ),
+                      )
+                    : Container(
+                        width: 100,
+                        height: 120,
+                        color: Colors.grey,
+                        child: const Icon(Icons.movie, color: Colors.white),
+                      ),
+              ),
+              const SizedBox(width: 16),
+              // Thông tin vé
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.access_time, color: Colors.grey, size: 16),
-                    const SizedBox(width: 4),
+                    const SizedBox(height: 4),
+                    // Tên phim
                     Text(
-                      formattedTime,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                      booking.showtime.movie.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(width: 16),
-                    const Icon(
-                      Icons.event_seat,
-                      color: Color(0xFFFF4444),
-                      size: 16,
-                    ), // Ghế màu đỏ
-                    const SizedBox(width: 4),
-                    Text(
-                      seatText,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    const SizedBox(height: 12),
+
+                    // Rạp phim
+                    _buildInfoRow(
+                      Icons.location_on_outlined,
+                      booking.showtime.cinema,
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Ngày chiếu
+                    _buildInfoRow(Icons.calendar_today_outlined, formattedDate),
+                    const SizedBox(height: 8),
+
+                    // Giờ và Số ghế
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.access_time,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          formattedTime,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        const Icon(
+                          Icons.event_seat,
+                          color: Color(0xFFFF4444),
+                          size: 16,
+                        ), // Ghế màu đỏ
+                        const SizedBox(width: 4),
+                        Text(
+                          seatText,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
+            ],
+          ),
+
+          // Nút hủy vé (chỉ hiện với vé pending/confirmed)
+          if (canCancel) ...[
+            const SizedBox(height: 12),
+            const Divider(color: Colors.grey, thickness: 0.5),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _showCancelConfirmDialog(booking),
+                icon: const Icon(Icons.cancel_outlined, size: 18),
+                label: const Text('Hủy vé'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.withOpacity(0.2),
+                  foregroundColor: Colors.red,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.red.withOpacity(0.3)),
+                  ),
+                ),
+              ),
             ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // Dialog xác nhận hủy vé
+  Future<void> _showCancelConfirmDialog(Booking booking) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1F222A),
+        title: const Text(
+          'Xác nhận hủy vé',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'Bạn có chắc muốn hủy vé xem phim "${booking.showtime.movie.title}"?',
+          style: const TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Không', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Hủy vé'),
           ),
         ],
       ),
     );
+
+    if (confirmed == true) {
+      await _cancelBooking(booking.id);
+    }
+  }
+
+  // Thực hiện hủy vé
+  Future<void> _cancelBooking(String bookingId) async {
+    try {
+      // Hiển thị loading
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // Gọi API hủy vé
+      final success = await _bookingService.cancelBooking(bookingId);
+
+      if (!mounted) return;
+      Navigator.pop(context); // Đóng loading dialog
+
+      if (success) {
+        // Hiển thị thông báo thành công
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã hủy vé thành công'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Reload danh sách vé
+        _loadBookings();
+      } else {
+        throw Exception('Hủy vé thất bại');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context); // Đóng loading dialog
+
+      // Hiển thị lỗi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildInfoRow(IconData icon, String text) {
