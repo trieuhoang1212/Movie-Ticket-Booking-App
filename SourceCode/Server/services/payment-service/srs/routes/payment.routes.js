@@ -41,12 +41,7 @@ const { validateCreatePayment } = require("../validators/payment.validator");
  *       401:
  *         description: Unauthorized
  */
-router.post(
-  "/create",
-  authenticateToken,
-  validateCreatePayment,
-  vnpayController.createPayment
-);
+router.post("/create", validateCreatePayment, vnpayController.createPayment);
 
 /**
  * @swagger

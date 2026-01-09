@@ -32,14 +32,22 @@ const middlewares = {
       "/api/booking/movies",
       "/api/booking/showtimes",
       "/api/user/health",
-      "/health", // <-- Đã thêm endpoint này
+      "/health",
     ];
 
-    const isPublicEndpoint = publicEndpoints.some((endpoint) =>
-      req.url.startsWith(endpoint)
-    );
+    // Patterns to match with startsWith (allow all sub-paths)
+    const publicPrefixes = [
+      "/api/booking", // Allow all booking operations (for development)
+      "/api/payment", // Allow all payment operations (for development)
+    ];
+
+    const isPublicEndpoint =
+      publicEndpoints.some((endpoint) =>
+        req.originalUrl.startsWith(endpoint)
+      ) || publicPrefixes.some((prefix) => req.originalUrl.startsWith(prefix));
 
     if (isPublicEndpoint) {
+      console.log(`✅ Public endpoint, skipping authentication`);
       next();
     } else {
       try {

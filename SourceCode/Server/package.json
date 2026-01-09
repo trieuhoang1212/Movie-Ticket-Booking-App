@@ -1,8 +1,9 @@
 {
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
     "firebase-admin": "^13.6.0",
-    "mongoose": "^9.0.1",
+    "mongoose": "^9.1.2",
     "next": "^14.2.33",
     "swagger-ui-express": "^5.0.1",
     "vnpay": "^2.4.4"

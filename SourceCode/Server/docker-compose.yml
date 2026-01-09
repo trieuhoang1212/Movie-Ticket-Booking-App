@@ -69,6 +69,10 @@ services:
       - JWT_EXPIRES_IN=7d
       - NOTIFICATION_SERVICE_URL=http://notification-service:3005
       - INTERNAL_API_KEY=internal-secret-key
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_PRIVATE_KEY_ID=${FIREBASE_PRIVATE_KEY_ID}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
     depends_on:
       - mongodb
       - notification-service
@@ -131,8 +135,11 @@ services:
       - PORT=3004
       - NODE_ENV=production
       - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
-      - VNPAY_TMN_CODE=your_vnpay_code
-      - VNPAY_SECRET_KEY=your_vnpay_secret
+      - VNP_TMN_CODE=DEMOV210
+      - VNP_HASH_SECRET=RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ
+      - VNP_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+      - VNP_RETURN_URL=http://10.0.2.2:3000/api/payment/vnpay-return
+      - VNP_IPN_URL=http://payment-service:3004/api/payment/vnpay-ipn
       - NOTIFICATION_SERVICE_URL=http://notification-service:3005
       - BOOKING_SERVICE_URL=http://booking-service:3002
       - INTERNAL_API_KEY=internal-secret-key

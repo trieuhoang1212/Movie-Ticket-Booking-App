@@ -50,6 +50,10 @@ const movieSchema = new mongoose.Schema(
       enum: ["now_showing", "coming_soon", "ended"],
       default: "now_showing",
     },
+    isHot: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

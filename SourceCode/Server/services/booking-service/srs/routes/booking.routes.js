@@ -12,7 +12,7 @@ const { authenticateToken } = require("../middlewares/auth.middleware");
  */
 
 // ==========================================
-// 1. PUBLIC ROUTES
+// 1. PUBLIC ROUTES (Specific routes first)
 // ==========================================
 
 /**
@@ -26,24 +26,6 @@ const { authenticateToken } = require("../middlewares/auth.middleware");
  * description: List of movies
  */
 router.get("/movies", bookingController.getMovies);
-
-/**
- * @swagger
- * /api/bookings/movies/{id}:
- * get:
- * summary: Get movie by ID
- * tags: [Bookings]
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * responses:
- * 200:
- * description: Movie details
- */
-router.get("/movies/:id", bookingController.getMovieById);
 
 /**
  * @swagger
@@ -62,6 +44,24 @@ router.get("/movies/:id", bookingController.getMovieById);
  * description: List of showtimes
  */
 router.get("/movies/:movieId/showtimes", bookingController.getShowtimesByMovie);
+
+/**
+ * @swagger
+ * /api/bookings/movies/{id}:
+ * get:
+ * summary: Get movie by ID
+ * tags: [Bookings]
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * responses:
+ * 200:
+ * description: Movie details
+ */
+router.get("/movies/:id", bookingController.getMovieById);
 
 /**
  * @swagger
@@ -85,7 +85,7 @@ router.get(
 );
 
 // ==========================================
-// 2. PRIVATE ROUTES
+// 2. PRIVATE ROUTES (Specific routes first)
 // ==========================================
 
 /**
@@ -136,26 +136,6 @@ router.post(
 
 /**
  * @swagger
- * /api/bookings/{id}:
- * get:
- * summary: Get booking details by ID
- * tags: [Bookings]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * responses:
- * 200:
- * description: Success
- */
-router.get("/:id", authenticateToken, bookingController.getBookingById);
-
-/**
- * @swagger
  * /api/bookings/{id}/cancel:
  * post:
  * summary: Cancel a booking
@@ -173,5 +153,25 @@ router.get("/:id", authenticateToken, bookingController.getBookingById);
  * description: Cancelled
  */
 router.post("/:id/cancel", authenticateToken, bookingController.cancelBooking);
+
+/**
+ * @swagger
+ * /api/bookings/{id}:
+ * get:
+ * summary: Get booking details by ID
+ * tags: [Bookings]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * responses:
+ * 200:
+ * description: Success
+ */
+router.get("/:id", authenticateToken, bookingController.getBookingById);
 
 module.exports = router;

@@ -65,13 +65,22 @@ class VNPayService {
 
     vnp_Params = this.sortObject(vnp_Params);
 
-    const signData = querystring.stringify(vnp_Params, { encode: false });
+    // Build sign data WITHOUT encoding (VNPay requires raw values for signature)
+    const signData = Object.keys(vnp_Params)
+      .map((key) => `${key}=${vnp_Params[key]}`)
+      .join("&");
+
     const secureHash = this.createSignature(signData, this.vnp_HashSecret);
 
     vnp_Params.vnp_SecureHash = secureHash;
 
+    // Build final payment URL with encoding
     const paymentUrl =
-      this.vnp_Url + "?" + querystring.stringify(vnp_Params, { encode: false });
+      this.vnp_Url +
+      "?" +
+      Object.keys(vnp_Params)
+        .map((key) => `${key}=${encodeURIComponent(vnp_Params[key])}`)
+        .join("&");
 
     return paymentUrl;
   }
