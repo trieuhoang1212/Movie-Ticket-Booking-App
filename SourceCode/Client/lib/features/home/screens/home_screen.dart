@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/movie_model.dart';
 import '../services/movie_service.dart';
-import 'favorite_screen.dart';
 import 'my_tickets_screen.dart';
+import 'favorite_screen.dart';
 import 'movie_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Movie> hotMovies = [];
   List<Movie> nowShowingMovies = [];
 
-  // Danh sách phim yêu thích (mock)
+  // Danh sách phim yêu thích (tạm thời mock)
   final List<Map<String, String>> _favoriteMovies = [];
 
   // Trạng thái loading
@@ -43,11 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
   // Load dữ liệu phim từ API
   Future<void> _loadMovies() async {
     try {
-      // Load phim đang hot (now_showing)
+      // Load phim đang hot (now_showing + isHot = true)
       final hot = await _movieService.getHotMovies();
 
-      // Load phim đang chiếu (cũng là now_showing, bạn có thể dùng coming_soon nếu muốn)
-      final nowShowing = await _movieService.getMovies(status: 'now_showing');
+      // Load tất cả phim đang chiếu (now_showing)
+      final nowShowing = await _movieService.getNowShowingMovies();
 
       setState(() {
         hotMovies = hot;
@@ -221,6 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                       builder: (context) => MovieDetailScreen(
                         movieData: {
+                          'id': movie.id,
                           'title': movie.title,
                           'image': movie.posterUrl ?? '',
                           'duration': movie.durationFormatted,
@@ -256,8 +257,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   loadingBuilder:
                                       (context, child, loadingProgress) {
-                                        if (loadingProgress == null)
+                                        if (loadingProgress == null) {
                                           return child;
+                                        }
                                         return Container(
                                           color: Colors.grey,
                                           child: const Center(
@@ -363,6 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           builder: (context) =>
                                               MovieDetailScreen(
                                                 movieData: {
+                                                  'id': movie.id,
                                                   'title': movie.title,
                                                   'image':
                                                       movie.posterUrl ?? '',
@@ -461,7 +464,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildNavItem(IconData icon, int index) {
     final isSelected = _selectedIndex == index;
     return IconButton(
-      onPressed: () => setState(() => _selectedIndex = index),
+      onPressed: () {
+        setState(() => _selectedIndex = index);
+      },
       icon: Icon(
         icon,
         color: isSelected ? Colors.white : Colors.grey,
