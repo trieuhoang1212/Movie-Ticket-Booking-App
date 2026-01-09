@@ -19,9 +19,9 @@ const bookingSchema = new mongoose.Schema(
           ref: "Seat",
           required: true,
         },
-        seatNumber: String,
-        type: String,
-        price: Number,
+        seatNumber: { type: String },
+        type: { type: String }, // Wrap in object to avoid Mongoose keyword conflict
+        price: { type: Number },
       },
     ],
     totalAmount: {

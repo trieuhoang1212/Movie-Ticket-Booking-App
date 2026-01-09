@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
-const Movie = require("./repositories/movie.model");
-const Showtime = require("./repositories/showtime.model");
-const Seat = require("./repositories/seat.model");
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
+const Movie = require("../repositories/movie.model");
+const Showtime = require("../repositories/showtime.model");
+const Seat = require("../repositories/seat.model");
 
 const connectDB = async () => {
   try {
@@ -16,7 +17,6 @@ const connectDB = async () => {
 
 // Dữ liệu phim mẫu
 const moviesData = [
-  // PHIM ĐANG CHIẾU (HOT)
   {
     title: "Avatar: The Way of Water",
     description:
@@ -32,6 +32,7 @@ const moviesData = [
     cast: ["Sam Worthington", "Zoe Saldana", "Sigourney Weaver"],
     language: "English",
     status: "now_showing",
+    isHot: true,
   },
   {
     title: "Mai",
@@ -42,12 +43,13 @@ const moviesData = [
     releaseDate: new Date("2024-02-10"),
     rating: 7.8,
     posterUrl:
-      "https://cdn.galaxycine.vn/media/2024/1/29/mai-1_1706495746106.jpg",
+      "https://www.elle.vn/wp-content/uploads/2023/12/06/560540/poster-Mai-scaled.jpg",
     trailerUrl: "https://www.youtube.com/watch?v=example",
     director: "Trấn Thành",
     cast: ["Phương Anh Đào", "Tuấn Trần", "Hồng Đào"],
     language: "Vietnamese",
     status: "now_showing",
+    isHot: true,
   },
   {
     title: "Godzilla x Kong: The New Empire",
@@ -58,12 +60,13 @@ const moviesData = [
     releaseDate: new Date("2024-03-29"),
     rating: 8.2,
     posterUrl:
-      "https://image.tmdb.org/t/p/w500/gmGK98euDMPOuCJjmfPC0FQ40Hw.jpg",
+      "https://m.media-amazon.com/images/M/MV5BMTY0N2MzODctY2ExYy00OWYxLTkyNDItMTVhZGIxZjliZjU5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
     trailerUrl: "https://www.youtube.com/watch?v=lV1OOlGwExM",
     director: "Adam Wingard",
     cast: ["Rebecca Hall", "Brian Tyree Henry", "Dan Stevens"],
     language: "English",
     status: "now_showing",
+    isHot: false,
   },
   {
     title: "Dune: Part Two",
@@ -80,6 +83,7 @@ const moviesData = [
     cast: ["Timothée Chalamet", "Zendaya", "Rebecca Ferguson"],
     language: "English",
     status: "now_showing",
+    isHot: false,
   },
   {
     title: "Kung Fu Panda 4",
@@ -96,9 +100,9 @@ const moviesData = [
     cast: ["Jack Black", "Awkwafina", "Viola Davis"],
     language: "English",
     status: "now_showing",
+    isHot: true,
   },
 
-  // PHIM SẮP CHIẾU
   {
     title: "Deadpool 3",
     description:
@@ -129,7 +133,7 @@ const moviesData = [
     director: "Kelsey Mann",
     cast: ["Amy Poehler", "Phyllis Smith", "Lewis Black"],
     language: "English",
-    status: "coming_soon",
+    status: "now_showing",
   },
   {
     title: "A Quiet Place: Day One",
@@ -145,22 +149,7 @@ const moviesData = [
     director: "Michael Sarnoski",
     cast: ["Lupita Nyong'o", "Joseph Quinn", "Alex Wolff"],
     language: "English",
-    status: "coming_soon",
-  },
-  {
-    title: "Bad Boys: Ride or Die",
-    description:
-      "Mike Lowrey và Marcus Burnett trở lại trong một nhiệm vụ mới đầy nguy hiểm.",
-    duration: 115,
-    genre: ["Hành động", "Hài", "Tội phạm"],
-    releaseDate: new Date("2024-06-07"),
-    rating: 0,
-    posterUrl: "https://image.tmdb.org/t/p/w500/example.jpg",
-    trailerUrl: "https://www.youtube.com/watch?v=example",
-    director: "Adil El Arbi, Bilall Fallah",
-    cast: ["Will Smith", "Martin Lawrence", "Vanessa Hudgens"],
-    language: "English",
-    status: "coming_soon",
+    status: "now_showing",
   },
   {
     title: "Mufasa: The Lion King",
@@ -169,24 +158,24 @@ const moviesData = [
     duration: 118,
     genre: ["Hoạt hình", "Phiêu lưu", "Gia đình"],
     releaseDate: new Date("2024-12-20"),
-    rating: 0,
-    posterUrl: "https://image.tmdb.org/t/p/w500/example2.jpg",
+    rating: 8,
+    posterUrl: "https://www.bhdstar.vn/wp-content/uploads/2024/12/referenceSchemeHeadOfficeallowPlaceHoldertrueheight700ldapp-10.jpg",
     trailerUrl: "https://www.youtube.com/watch?v=example",
     director: "Barry Jenkins",
     cast: ["Aaron Pierre", "Kelvin Harrison Jr.", "John Kani"],
     language: "English",
-    status: "coming_soon",
+    status: "now_showing",
   },
 ];
 
 // Tạo showtimes cho mỗi phim
 const createShowtimesForMovie = (movieId, movieTitle) => {
   const showtimes = [];
-  const cinemas = ["CGV Vincom", "Lotte Cinema", "Galaxy Cinema", "BHD Star"];
-  const times = ["10:00", "13:00", "16:00", "19:00", "22:00"];
+  const cinemas = ["CGV Vincom", "Galaxy Cinema"]; // Giảm từ 4 xuống 2 rạp
+  const times = ["13:00", "16:00", "19:00"]; // Giảm từ 5 xuống 3 suất
 
-  // Tạo suất chiếu cho 7 ngày tới
-  for (let day = 0; day < 7; day++) {
+  // Tạo suất chiếu cho 3 ngày tới (giảm từ 7 xuống 3)
+  for (let day = 0; day < 3; day++) {
     const date = new Date();
     date.setDate(date.getDate() + day);
 
@@ -198,15 +187,15 @@ const createShowtimesForMovie = (movieId, movieTitle) => {
 
         showtimes.push({
           movieId,
-          cinema,
-          room: `Phòng ${Math.floor(Math.random() * 5) + 1}`,
+          cinemaHall: `${cinema} - Phòng ${Math.floor(Math.random() * 5) + 1}`,
           startTime,
           endTime: new Date(startTime.getTime() + 120 * 60000), // +2 hours
           price: {
-            standard: 75000,
+            regular: 75000,
             vip: 120000,
             couple: 200000,
           },
+          availableSeats: 96, // 8 rows x 12 seats = 96 seats
           status: "available",
         });
       });
@@ -224,7 +213,7 @@ const createSeatsForShowtime = (showtimeId) => {
 
   rows.forEach((row, rowIndex) => {
     for (let i = 1; i <= seatsPerRow; i++) {
-      let type = "standard";
+      let type = "regular";
       if (rowIndex >= 6) type = "vip"; // 2 hàng cuối là VIP
       if (i === 5 || i === 6) type = "couple"; // Ghế đôi ở giữa
 

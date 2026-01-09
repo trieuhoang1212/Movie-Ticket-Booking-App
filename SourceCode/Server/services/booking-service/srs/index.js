@@ -16,10 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 // Swagger Documentation
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Routes
-app.use("/", bookingRoutes);
-
-// Health check endpoint
+// Health check endpoint (MUST be before routes with /:id pattern)
 app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -27,6 +24,9 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// Routes
+app.use("/", bookingRoutes);
 
 // Kết nối đến database và khởi động server
 const startServer = async () => {
