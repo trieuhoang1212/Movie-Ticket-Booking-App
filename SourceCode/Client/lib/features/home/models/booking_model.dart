@@ -1,7 +1,7 @@
 class Booking {
   final String id;
   final String userId;
-  final Showtime showtime;
+  final BookingShowtime showtime;
   final List<BookingSeat> seats;
   final double totalAmount;
   final String bookingCode;
@@ -28,10 +28,13 @@ class Booking {
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) {
+    // Backend trả về 'showtime' object (không phải 'showtimeId')
+    final showtimeData = json['showtime'] ?? json['showtimeId'] ?? {};
+
     return Booking(
       id: json['_id'] ?? '',
       userId: json['userId'] ?? '',
-      showtime: Showtime.fromJson(json['showtimeId'] ?? {}),
+      showtime: BookingShowtime.fromJson(showtimeData),
       seats:
           (json['seats'] as List?)
               ?.map((seat) => BookingSeat.fromJson(seat))
@@ -56,7 +59,7 @@ class Booking {
   bool get isCompleted => status == 'completed' || status == 'cancelled';
 }
 
-class Showtime {
+class BookingShowtime {
   final String id;
   final MovieInfo movie;
   final DateTime startTime;
@@ -65,7 +68,7 @@ class Showtime {
   final String screen;
   final String status;
 
-  Showtime({
+  BookingShowtime({
     required this.id,
     required this.movie,
     required this.startTime,
@@ -75,18 +78,37 @@ class Showtime {
     required this.status,
   });
 
-  factory Showtime.fromJson(Map<String, dynamic> json) {
-    return Showtime(
+  factory BookingShowtime.fromJson(Map<String, dynamic> json) {
+    // Backend trả về format: showtime.movieTitle, showtime.moviePoster, showtime.theaterName
+    String cinema = json['theaterName'] ?? json['cinema'] ?? 'Unknown Cinema';
+    String screen =
+        json['roomName'] ?? json['room'] ?? json['screen'] ?? 'Unknown Screen';
+
+    // Parse movie info
+    MovieInfo movie;
+    if (json['movieId'] != null && json['movieId'] is Map) {
+      // Format cũ: có movieId object
+      movie = MovieInfo.fromJson(json['movieId']);
+    } else {
+      // Format mới từ backend: movieTitle, moviePoster trực tiếp
+      movie = MovieInfo(
+        id: json['movieId']?.toString() ?? '',
+        title: json['movieTitle'] ?? 'Unknown Movie',
+        posterUrl: json['moviePoster'],
+      );
+    }
+
+    return BookingShowtime(
       id: json['_id'] ?? '',
-      movie: MovieInfo.fromJson(json['movieId'] ?? {}),
+      movie: movie,
       startTime: json['startTime'] != null
           ? DateTime.parse(json['startTime'])
           : DateTime.now(),
       endTime: json['endTime'] != null
           ? DateTime.parse(json['endTime'])
           : DateTime.now(),
-      cinema: json['cinema'] ?? 'Unknown Cinema',
-      screen: json['screen'] ?? 'Unknown Screen',
+      cinema: cinema,
+      screen: screen,
       status: json['status'] ?? 'available',
     );
   }
