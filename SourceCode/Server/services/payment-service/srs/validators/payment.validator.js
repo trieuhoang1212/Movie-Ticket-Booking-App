@@ -4,7 +4,7 @@ const createPaymentSchema = Joi.object({
   orderId: Joi.string().required(),
   amount: Joi.number().min(0).required(),
   orderInfo: Joi.string().required(),
-  bankCode: Joi.string().optional(),
+  bankCode: Joi.string().allow(null, "").optional(),
 });
 
 const validateCreatePayment = (req, res, next) => {

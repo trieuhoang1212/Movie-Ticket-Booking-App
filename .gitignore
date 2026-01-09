@@ -8,3 +8,4 @@ SourceCode/Server/services/auth-service/srs/.env
 SourceCode/Server/api-gateway/.env
 SourceCode/Server/services/booking-service/srs/.env
 **/.env
+SourceCode/Server/services/FireBase_Token.json
