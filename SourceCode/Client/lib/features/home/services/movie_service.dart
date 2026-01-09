@@ -6,13 +6,22 @@ class MovieService {
   // URL của API Gateway - Thay đổi theo môi trường của bạn
   static const String baseUrl = 'http://10.0.2.2:3000';
 
-  // Lấy danh sách phim theo status
-  Future<List<Movie>> getMovies({String? status}) async {
+  // Lấy danh sách phim theo status và isHot
+  Future<List<Movie>> getMovies({String? status, bool? isHot}) async {
     try {
-      // Build URL với query parameter
+      // Build URL với query parameters
       String url = '$baseUrl/api/booking/movies';
+      List<String> params = [];
+
       if (status != null) {
-        url += '?status=$status';
+        params.add('status=$status');
+      }
+      if (isHot != null) {
+        params.add('isHot=$isHot');
+      }
+
+      if (params.isNotEmpty) {
+        url += '?${params.join('&')}';
       }
 
       // Gọi API
@@ -41,8 +50,13 @@ class MovieService {
     }
   }
 
-  // Lấy phim đang hot (now_showing)
+  // Lấy phim đang hot (now_showing + isHot = true)
   Future<List<Movie>> getHotMovies() async {
+    return await getMovies(status: 'now_showing', isHot: true);
+  }
+
+  // Lấy phim đang chiếu (now_showing)
+  Future<List<Movie>> getNowShowingMovies() async {
     return await getMovies(status: 'now_showing');
   }
 
