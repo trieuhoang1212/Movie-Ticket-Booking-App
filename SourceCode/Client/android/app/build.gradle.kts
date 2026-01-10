@@ -16,6 +16,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+
+        // --- 1. SỬA: Bật Desugaring (Cú pháp Kotlin) ---
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -33,9 +36,6 @@ android {
         versionName = flutter.versionName
         multiDexEnabled = true
     }
-    dependencies {
-        implementation("androidx.multidex:multidex:2.0.1")
-    }
 
     buildTypes {
         release {
@@ -48,4 +48,12 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// --- 2. SỬA: Chuyển dependencies ra ngoài khối android và thêm thư viện Desugar ---
+dependencies {
+    implementation("androidx.multidex:multidex:2.0.1")
+
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

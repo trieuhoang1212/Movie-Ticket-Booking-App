@@ -4,6 +4,7 @@ import '../services/movie_service.dart';
 import 'my_tickets_screen.dart';
 import 'favorite_screen.dart';
 import 'movie_detail_screen.dart';
+import 'notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -72,6 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return const MyTicketsScreen();
       case 3: // Yêu thích
         return FavoriteScreen(favoriteMovies: _favoriteMovies);
+      case 4: // Thông báo
+        return const NotificationScreen();
       default: // Home
         return _buildHomeContent();
     }

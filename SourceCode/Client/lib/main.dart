@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart'; // Thêm dòng này
 import 'firebase_options.dart';
 import 'features/auth/screens/login_screen.dart';
+
+// Import service thông báo (Đường dẫn dựa trên cấu trúc folder của bạn)
+import 'features/home/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // Thử kết nối Firebase
+    // 1. Kết nối Firebase
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    ("✅ KẾT NỐI FIREBASE THÀNH CÔNG!");
+    print("✅ KẾT NỐI FIREBASE THÀNH CÔNG!"); // <--- Đã thêm lệnh print
+
+    // 2. Đăng ký xử lý Background (Phải làm ngay sau khi Firebase init)
+    FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+
+    // 3. Khởi tạo Notification Service (Để lấy Token và xin quyền)
+    final notificationService = NotificationService();
+    await notificationService.initNotifications();
+    print("✅ ĐÃ KHỞI TẠO NOTIFICATION SERVICE");
+
   } catch (e) {
-    // Nếu lỗi thì in ra Console chứ không làm sập app
-    ("❌ LỖI KẾT NỐI FIREBASE: $e");
+    print("❌ LỖI KẾT NỐI: $e"); // <--- Đã thêm lệnh print
   }
 
-  // Chạy App dù Firebase có lỗi hay không
+  // Chạy App
   runApp(const MyApp());
 }
 
