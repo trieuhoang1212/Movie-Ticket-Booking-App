@@ -36,15 +36,81 @@
 - **Design:** Figma
 - **Local Storage:** Shared Preferences / Hive
 
-### Backend & Database
+### 🔍 Backend & Database 
 
-- **Core:** ASP.NET Core Web API (C#)
-- **Architecture:** Clean Architecture, Repository Pattern
-- **Database:** SQL Server / PostgreSQL
-- **ORM:** Entity Framework Core
-- **Authentication:** JWT (JSON Web Token) / Firebase Auth
+#### **Kiến trúc (Architecture)**
 
-### Tools & DevOps
+- **Pattern:** Microservices Architecture
+- **API Gateway:** Node.js + TypeScript + Express.js
+  - Routing & Load Balancing
+  - Authentication Middleware
+  - Request Caching (node-cache)
+  - Error Handling & Logging
+
+#### **Microservices**
+
+1. **Auth Service** (JavaScript)
+
+   - User Registration & Login
+   - JWT Token Generation & Verification
+   - Password Hashing (bcryptjs)
+   - Firebase Authentication Integration
+   - API Documentation (Swagger UI)
+
+2. **Booking Service** (JavaScript)
+
+   - Movie & Showtime Management
+   - Seat Selection & Real-time Availability
+   - Ticket Booking Logic
+   - QR Code Generation
+
+3. **User Service** (JavaScript)
+
+   - User Profile Management
+   - Booking History
+   - Preferences & Settings
+
+4. **Payment Service** (JavaScript)
+
+   - VNPay Integration
+   - Transaction Processing
+   - Payment History & Refunds
+
+5. **Notification Service** (JavaScript)
+   - Email Notifications
+   - Push Notifications (Firebase Cloud Messaging)
+   - Booking Confirmations & Reminders
+
+#### **Database**
+
+- **MongoDB 8.2.2:** NoSQL database
+  - User data, Booking records
+  - Movie & Theater information
+  - Transaction logs
+- **Mongoose:** ODM for MongoDB
+
+#### **Security & Authentication**
+
+- **JWT (jsonwebtoken):** Stateless authentication
+- **bcryptjs:** Password hashing (salt rounds: 10)
+- **Firebase Admin SDK:** Additional authentication layer
+- **CORS:** Cross-Origin Resource Sharing enabled
+- **Environment Variables:** Sensitive data protection
+
+#### **Validation & Documentation**
+
+- **Joi:** Request validation
+- **Swagger UI:** Interactive API documentation
+- **JSDoc:** Code-level documentation
+
+#### **DevOps & Deployment**
+
+- **Docker:** Containerization (node:20-alpine)
+- **Docker Compose:** Multi-container orchestration
+- **Healthchecks:** Service monitoring
+- **Non-root User:** Security best practices
+
+### 🔥 Tools & DevOps
 
 - **IDE:** Visual Studio Code, Visual Studio 2022
 - **Version Control:** Git, GitHub
