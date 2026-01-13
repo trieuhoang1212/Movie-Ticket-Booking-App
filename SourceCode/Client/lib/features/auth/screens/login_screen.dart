@@ -1,9 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 import 'email_login_screen.dart';
 import 'signup_screen.dart';
+import '../../home/screens/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
+
+  // --- HÀM XỬ LÝ ĐĂNG NHẬP GOOGLE ---
+  Future<void> _signInWithGoogle(BuildContext context) async {
+    // Hiện vòng xoay loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // 1. Kích hoạt luồng xác thực Google (Mở popup chọn tài khoản)
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      // Nếu user hủy (bấm ra ngoài hoặc bấm cancel)
+      if (googleUser == null) {
+        if (context.mounted) Navigator.pop(context); // Tắt loading
+        return;
+      }
+
+      // 2. Lấy thông tin xác thực (Token) từ request
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // 3. Tạo credential mới cho Firebase từ Token của Google
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // 4. Đăng nhập vào Firebase
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // 5. Nếu thành công
+      if (context.mounted) {
+        Navigator.pop(context); // Tắt loading
+
+        // Chuyển sang HomeScreen và xóa lịch sử để không back lại được Login
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (Route<dynamic> route) => false
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Đăng nhập Google thành công!")),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pop(context); // Tắt loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Lỗi đăng nhập: $e"), backgroundColor: Colors.red),
+        );
+      }
+      print("Google Sign-In Error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +79,7 @@ class LoginScreen extends StatelessWidget {
           // LỚP PHỦ MÀU ĐEN MỜ
           Positioned.fill(
             child: Container(
-              color: Colors.black.withValues(
-                alpha: 0.2,
-              ), // Độ mờ 60% (chỉnh số từ 0.0 đến 1.0)
+              color: Colors.black.withOpacity(0.2), // Sử dụng withOpacity cho ổn định
             ),
           ),
 
@@ -58,34 +117,44 @@ class LoginScreen extends StatelessWidget {
 
                 const SizedBox(height: 44),
 
-                // FACEBOOK
+                // FACEBOOK BUTTON
                 _socialButton(
                   icon: Icons.facebook,
                   text: "Đăng nhập với Facebook",
                   iconColor: Colors.blue,
+                  onTap: () {
+                    // Chưa tích hợp
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Tính năng Facebook đang phát triển")),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 12),
 
-                // GOOGLE
+                // GOOGLE BUTTON (ĐÃ TÍCH HỢP)
                 _socialButton(
                   icon: Icons.g_mobiledata,
                   text: "Đăng nhập với Google",
                   iconColor: Colors.red,
+                  onTap: () => _signInWithGoogle(context), // <--- GỌI HÀM Ở ĐÂY
                 ),
 
                 const SizedBox(height: 12),
 
-                // APPLE
+                // APPLE BUTTON
                 _socialButton(
                   icon: Icons.apple,
                   text: "Đăng nhập với Apple",
                   iconColor: Colors.white,
+                  onTap: () {
+                    // Chưa tích hợp
+                  },
                 ),
 
                 const SizedBox(height: 20),
 
-                // OR
+                // OR DIVIDER
                 Row(
                   children: const [
                     Expanded(child: Divider(color: Colors.grey)),
@@ -100,7 +169,6 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // LOGIN WITH PASSWORD
-                // LOGIN WITH PASSWORD - GRADIENT
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Container(
@@ -124,7 +192,6 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        // Chuyển sang màn hình EmailLoginScreen
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -146,7 +213,7 @@ class LoginScreen extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                // REGISTER
+                // REGISTER LINK
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -164,7 +231,6 @@ class LoginScreen extends StatelessWidget {
                           ),
                         );
                       },
-
                       child: const Text(
                         "Đăng kí",
                         style: TextStyle(
@@ -175,8 +241,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 20), // Khoảng trống dưới cùng
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -185,26 +250,36 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
+
   static Widget _socialButton({
     required IconData icon,
     required String text,
     required Color iconColor,
+    VoidCallback? onTap,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Container(
-        height: 44,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap, // <--- Gắn sự kiện vào đây
           borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: iconColor),
-            const SizedBox(width: 12),
-            Text(text, style: const TextStyle(color: Colors.white)),
-          ],
+          child: Container(
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: iconColor),
+                const SizedBox(width: 12),
+                Text(text, style: const TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
         ),
       ),
     );

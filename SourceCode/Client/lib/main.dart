@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart'; // Thêm dòng này
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'features/auth/screens/login_screen.dart';
-
-// Import service thông báo (Đường dẫn dựa trên cấu trúc folder của bạn)
 import 'features/home/services/notification_service.dart';
 
 void main() async {
