@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    fcmToken: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true } // Tự động thêm createdAt và updatedAt
 );

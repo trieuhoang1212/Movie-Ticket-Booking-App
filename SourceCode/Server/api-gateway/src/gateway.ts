@@ -38,7 +38,9 @@ const middlewares = {
     // Patterns to match with startsWith (allow all sub-paths)
     const publicPrefixes = [
       "/api/booking", // Allow all booking operations (for development)
+      "/api/bookings", // Alias for booking service
       "/api/payment", // Allow all payment operations (for development)
+      "/api/auth", // Allow all auth operations including fcm-token
     ];
 
     const isPublicEndpoint =
@@ -179,6 +181,25 @@ for (let [key, value] of ContextPathMap.entries()) {
     })
   );
 }
+
+app.use(
+  "/api/bookings",
+  proxy(`${ContextPathMap.get("booking")}`, {
+    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
+      console.log(userReq.originalUrl);
+      if (applyingCacheUrls.includes(userReq.originalUrl.split("?")[0])) {
+        const cacheValue = JSON.parse(proxyResData.toString("utf8"));
+        console.log("cacheValue ", userReq.originalUrl, proxyResData);
+        cacheService.addRouteCache(
+          userReq.originalUrl,
+          userReq.method,
+          cacheValue
+        );
+      }
+      return proxyResData;
+    },
+  })
+);
 
 // Health check endpoint
 app.get("/health", (req, res) => {

@@ -1,5 +1,53 @@
 const jwt = require("jsonwebtoken");
 const User = require("../repositories/user.model");
+const { admin } = require("../config/firebase");
+
+/**
+ * Middleware xác thực Firebase ID Token
+ * Dùng để verify Firebase token từ client
+ */
+const authenticateFirebaseToken = async (req, res, next) => {
+  try {
+    // Lấy token từ header Authorization: Bearer <token>
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Access token is required",
+      });
+    }
+
+    // Verify Firebase ID token
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    console.log("📱 Firebase token verified for:", decodedToken.email);
+
+    // Tìm user từ email (Firebase token chứa email của user)
+    const user = await User.findOne({ email: decodedToken.email }).select(
+      "-password"
+    );
+    if (!user) {
+      console.log("❌ User not found in database:", decodedToken.email);
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    console.log("✅ User found:", user.email);
+    // Gắn user vào request để dùng ở các controller
+    req.user = user;
+    req.firebaseUser = decodedToken;
+    next();
+  } catch (error) {
+    console.error("❌ Firebase token verification error:", error.message);
+    return res.status(401).json({
+      success: false,
+      message: "Invalid token",
+    });
+  }
+};
 
 /**
  * Middleware xác thực JWT Token
@@ -78,4 +126,8 @@ const authorizeRole = (...roles) => {
   };
 };
 
-module.exports = { authenticateToken, authorizeRole };
+module.exports = {
+  authenticateToken,
+  authenticateFirebaseToken,
+  authorizeRole,
+};

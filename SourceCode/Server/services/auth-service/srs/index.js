@@ -17,8 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 // Swagger Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Routes
-app.use("/api/auth", authRoutes);
+// Routes - Gateway already strips /api/auth prefix, so we mount at root
+app.use("/", authRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {

@@ -3,6 +3,7 @@ const Showtime = require("../repositories/showtime.model");
 const Seat = require("../repositories/seat.model");
 const Movie = require("../repositories/movie.model");
 const { notifyBookingConfirmed } = require("../services/notification.service");
+const fcmService = require("../services/fcm.service");
 
 // Tạo booking mới
 exports.createBooking = async (req, res) => {
@@ -243,7 +244,12 @@ exports.cancelBooking = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const booking = await Booking.findOne({ _id: id, userId });
+    const booking = await Booking.findOne({ _id: id, userId })
+      .populate("showtimeId")
+      .populate({
+        path: "showtimeId",
+        populate: { path: "movieId" },
+      });
 
     if (!booking) {
       return res.status(404).json({
@@ -259,6 +265,10 @@ exports.cancelBooking = async (req, res) => {
       });
     }
 
+    // Lưu thông tin để gửi notification
+    const movieTitle = booking.showtimeId?.movieId?.title || "Phim";
+    const bookingCode = booking.bookingCode;
+
     // Cập nhật trạng thái booking
     booking.status = "cancelled";
     await booking.save();
@@ -270,9 +280,88 @@ exports.cancelBooking = async (req, res) => {
       { status: "available", $unset: { reservedBy: "", reservedUntil: "" } }
     );
 
+    // Gửi push notification
+    try {
+      await fcmService.sendNotificationToUser(
+        userId,
+        "❌ Vé đã bị hủy",
+        `Vé "${movieTitle}" (${bookingCode}) đã bị hủy thành công.`,
+        {
+          type: "BOOKING_CANCELLED",
+          bookingCode,
+          movieTitle,
+        }
+      );
+      console.log("✅ Cancel notification sent");
+    } catch (notifError) {
+      console.error("⚠️ Failed to send notification:", notifError.message);
+    }
+
     res.status(200).json({
       success: true,
       message: "Booking cancelled successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+// Xóa booking (chỉ cho vé đã hoàn thành hoặc đã hủy)
+exports.deleteBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const booking = await Booking.findOne({ _id: id, userId })
+      .populate("showtimeId")
+      .populate({
+        path: "showtimeId",
+        populate: { path: "movieId" },
+      });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    // Chỉ cho phép xóa vé đã hoàn thành hoặc đã hủy
+    if (booking.status !== "completed" && booking.status !== "cancelled") {
+      return res.status(400).json({
+        success: false,
+        message: "Can only delete completed or cancelled bookings",
+      });
+    }
+
+    // Lưu thông tin để gửi notification
+    const movieTitle = booking.showtimeId?.movieId?.title || "Phim";
+    const bookingCode = booking.bookingCode;
+    const showtimeDate = booking.showtimeId?.showtime;
+
+    // Xóa booking khỏi database
+    await Booking.deleteOne({ _id: id });
+
+    // Gửi push notification
+    try {
+      await fcmService.sendBookingDeletedNotification(userId, {
+        movieTitle,
+        bookingCode,
+        showtimeDate,
+      });
+      console.log("✅ Delete notification sent");
+    } catch (notifError) {
+      console.error("⚠️ Failed to send notification:", notifError.message);
+      // Không block response nếu notification fail
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Booking deleted successfully",
     });
   } catch (error) {
     res.status(500).json({

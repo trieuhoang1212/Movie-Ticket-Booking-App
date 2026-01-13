@@ -157,6 +157,26 @@ router.post("/:id/cancel", authenticateToken, bookingController.cancelBooking);
 /**
  * @swagger
  * /api/bookings/{id}:
+ * delete:
+ * summary: Delete a booking (only completed or cancelled)
+ * tags: [Bookings]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * responses:
+ * 200:
+ * description: Deleted
+ */
+router.delete("/:id", authenticateToken, bookingController.deleteBooking);
+
+/**
+ * @swagger
+ * /api/bookings/{id}:
  * get:
  * summary: Get booking details by ID
  * tags: [Bookings]
