@@ -4,11 +4,13 @@ import 'package:http/http.dart' as http;
 import '../models/booking_model.dart';
 import '../models/showtime_model.dart';
 import '../models/seat_model.dart';
+import '../models/notification_model.dart';
+import 'database_helper.dart';
 
 class BookingService {
   // URL của API Gateway
   // Android emulator: 10.0.2.2 = localhost của máy host
-  static const String baseUrl = 'http://10.0.2.2:3000/api/booking';
+  static const String baseUrl = 'http://10.0.2.2:3000/api/bookings';
 
   // Lấy danh sách booking của user hiện tại
   Future<List<Booking>> getMyBookings() async {
@@ -122,6 +124,36 @@ class BookingService {
     }
   }
 
+  // Xóa booking (chỉ cho vé đã hoàn thành hoặc đã hủy)
+  Future<bool> deleteBooking(String bookingId) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final token = await user.getIdToken();
+
+      final response = await http.delete(
+        Uri.parse('$baseUrl/$bookingId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return data['success'] == true;
+      } else {
+        throw Exception('Failed to delete booking: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error deleting booking: $e');
+      throw Exception('Error deleting booking: $e');
+    }
+  }
+
   // Lấy danh sách showtimes theo movieId
   Future<List<Showtime>> getShowtimesByMovie(String movieId) async {
     try {
@@ -229,7 +261,12 @@ class BookingService {
         final Map<String, dynamic> data = json.decode(response.body);
 
         if (data['success'] == true && data['data'] != null) {
-          return Booking.fromJson(data['data']['booking']);
+          final booking = Booking.fromJson(data['data']['booking']);
+
+          // 🎉 Lưu thông báo đặt vé thành công vào local database
+          await _saveBookingSuccessNotification(booking);
+
+          return booking;
         } else {
           throw Exception('Invalid response format');
         }
@@ -244,6 +281,31 @@ class BookingService {
     } catch (e) {
       print('❌ Error creating booking: $e');
       throw Exception('Error creating booking: $e');
+    }
+  }
+
+  // Hàm lưu thông báo đặt vé thành công
+  Future<void> _saveBookingSuccessNotification(Booking booking) async {
+    try {
+      // Tạo chuỗi ghế ngồi
+      final seatNumbers = booking.seats.map((s) => s.seatNumber).join(', ');
+
+      // Tạo notification model
+      final notification = NotificationModel(
+        title: '🎉 Đặt vé thành công!',
+        body:
+            'Bạn đã đặt vé phim "${booking.showtime.movie.title}" - Ghế: $seatNumbers. Tổng tiền: ${booking.totalAmount.toStringAsFixed(0)}đ',
+        type: 'booking',
+        time: DateTime.now().toString(),
+        isRead: 0,
+      );
+
+      // Lưu vào database
+      await DatabaseHelper.instance.addNotification(notification);
+      print('✅ Booking success notification saved to local DB');
+    } catch (e) {
+      print('⚠️ Failed to save booking notification: $e');
+      // Không throw để không ảnh hưởng flow đặt vé
     }
   }
 }

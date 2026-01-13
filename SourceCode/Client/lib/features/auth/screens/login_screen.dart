@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'email_login_screen.dart';
 import 'signup_screen.dart';
 import '../../home/screens/home_screen.dart';
+import '../../home/services/fcm_service.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -30,7 +31,8 @@ class LoginScreen extends StatelessWidget {
       }
 
       // 2. Lấy thông tin xác thực (Token) từ request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // 3. Tạo credential mới cho Firebase từ Token của Google
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -41,14 +43,22 @@ class LoginScreen extends StatelessWidget {
       // 4. Đăng nhập vào Firebase
       await FirebaseAuth.instance.signInWithCredential(credential);
 
+      // 4.1. Lưu FCM token lên server
+      try {
+        final fcmService = FCMService();
+        await fcmService.saveFCMToken();
+      } catch (e) {
+        print('⚠️ Failed to save FCM token: $e');
+      }
+
       // 5. Nếu thành công
       if (context.mounted) {
         Navigator.pop(context); // Tắt loading
 
         // Chuyển sang HomeScreen và xóa lịch sử để không back lại được Login
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-                (Route<dynamic> route) => false
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (Route<dynamic> route) => false,
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -59,7 +69,10 @@ class LoginScreen extends StatelessWidget {
       if (context.mounted) {
         Navigator.pop(context); // Tắt loading
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Lỗi đăng nhập: $e"), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text("Lỗi đăng nhập: $e"),
+            backgroundColor: Colors.red,
+          ),
         );
       }
       print("Google Sign-In Error: $e");
@@ -79,7 +92,9 @@ class LoginScreen extends StatelessWidget {
           // LỚP PHỦ MÀU ĐEN MỜ
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.2), // Sử dụng withOpacity cho ổn định
+              color: Colors.black.withOpacity(
+                0.2,
+              ), // Sử dụng withOpacity cho ổn định
             ),
           ),
 
@@ -125,7 +140,9 @@ class LoginScreen extends StatelessWidget {
                   onTap: () {
                     // Chưa tích hợp
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Tính năng Facebook đang phát triển")),
+                      const SnackBar(
+                        content: Text("Tính năng Facebook đang phát triển"),
+                      ),
                     );
                   },
                 ),
@@ -249,7 +266,6 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
-
 
   static Widget _socialButton({
     required IconData icon,

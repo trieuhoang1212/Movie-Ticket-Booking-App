@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../../home/screens/home_screen.dart';
+import '../../home/services/fcm_service.dart';
 
 class EmailLoginScreen extends StatefulWidget {
   const EmailLoginScreen({super.key});
@@ -33,6 +34,14 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
 
     if (mounted) {
       if (error == null) {
+        // 0. Lưu FCM token lên server
+        try {
+          final fcmService = FCMService();
+          await fcmService.saveFCMToken();
+        } catch (e) {
+          print('⚠️ Failed to save FCM token: $e');
+        }
+
         // 1. Thông báo thành công
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

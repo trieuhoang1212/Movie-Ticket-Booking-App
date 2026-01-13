@@ -3,6 +3,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/notification_model.dart';
+
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
@@ -48,5 +49,17 @@ class DatabaseHelper {
 
     // Code gọn hơn nhờ hàm fromMap bên Model
     return result.map((json) => NotificationModel.fromMap(json)).toList();
+  }
+
+  // Xóa một thông báo theo ID
+  Future<void> deleteNotification(int id) async {
+    final db = await instance.database;
+    await db.delete('notifications', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // Xóa tất cả thông báo
+  Future<void> deleteAllNotifications() async {
+    final db = await instance.database;
+    await db.delete('notifications');
   }
 }

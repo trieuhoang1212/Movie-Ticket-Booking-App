@@ -178,7 +178,72 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       itemCount: displayBookings.length,
                       itemBuilder: (context, index) {
-                        return _buildTicketCard(displayBookings[index]);
+                        final booking = displayBookings[index];
+                        // Chỉ cho phép xóa vé đã xem (completed/cancelled)
+                        final canDelete =
+                            booking.status == 'completed' ||
+                            booking.status == 'cancelled';
+
+                        if (canDelete) {
+                          return Dismissible(
+                            key: Key(booking.id),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              margin: const EdgeInsets.only(bottom: 20),
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                                size: 32,
+                              ),
+                            ),
+                            confirmDismiss: (direction) async {
+                              return await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  backgroundColor: const Color(0xFF1F222A),
+                                  title: const Text(
+                                    'Xóa vé?',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  content: Text(
+                                    'Bạn có chắc muốn xóa vé xem phim "${booking.showtime.movie.title}"?',
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: const Text(
+                                        'Hủy',
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: const Text(
+                                        'Xóa',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            onDismissed: (direction) {
+                              _deleteBooking(booking);
+                            },
+                            child: _buildTicketCard(booking),
+                          );
+                        } else {
+                          return _buildTicketCard(booking);
+                        }
                       },
                     ),
                   ),
@@ -363,6 +428,66 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
               ),
             ),
           ],
+          // Nút xóa vé (chỉ hiện với vé đã xem - completed/cancelled)
+          if (!canCancel &&
+              (booking.status == 'completed' ||
+                  booking.status == 'cancelled')) ...[
+            const SizedBox(height: 12),
+            const Divider(color: Colors.grey, thickness: 0.5),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      backgroundColor: const Color(0xFF1F222A),
+                      title: const Text(
+                        'Xóa vé?',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      content: Text(
+                        'Bạn có chắc muốn xóa vé xem phim "${booking.showtime.movie.title}"?',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text(
+                            'Hủy',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text(
+                            'Xóa',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true) {
+                    _deleteBooking(booking);
+                  }
+                },
+                icon: const Icon(Icons.delete_outline, size: 18),
+                label: const Text('Xóa vé'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.withOpacity(0.2),
+                  foregroundColor: Colors.grey,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -398,6 +523,51 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
 
     if (confirmed == true) {
       await _cancelBooking(booking.id);
+    }
+  }
+
+  // Hàm xóa vé (cho vé đã xem)
+  Future<void> _deleteBooking(Booking booking) async {
+    try {
+      // Hiển thị loading
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // Gọi API xóa vé
+      final success = await _bookingService.deleteBooking(booking.id);
+
+      if (!mounted) return;
+      Navigator.pop(context); // Đóng loading dialog
+
+      if (success) {
+        // Hiển thị thông báo thành công
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('🗑️ Đã xóa vé thành công'),
+            backgroundColor: Colors.grey,
+          ),
+        );
+
+        // Reload danh sách vé
+        _loadBookings();
+      } else {
+        throw Exception('Xóa vé thất bại');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context); // Đóng loading dialog
+
+      // Hiển thị lỗi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
