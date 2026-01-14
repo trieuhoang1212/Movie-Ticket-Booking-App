@@ -1,0 +1,230 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: movie-booking-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: movie_booking
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - movie-booking-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-service/srs
+      dockerfile: Dockerfile
+    container_name: auth-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRES_IN=7d
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_PRIVATE_KEY_ID=${FIREBASE_PRIVATE_KEY_ID}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+    depends_on:
+      - mongodb
+    networks:
+      - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3001/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Booking Service
+  booking-service:
+    build:
+      context: ./services/booking-service/srs
+      dockerfile: Dockerfile
+    container_name: booking-service
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRES_IN=7d
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3005
+      - INTERNAL_API_KEY=internal-secret-key
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_PRIVATE_KEY_ID=${FIREBASE_PRIVATE_KEY_ID}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+    depends_on:
+      - mongodb
+      - notification-service
+    networks:
+      - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3002/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # User Service
+  user-service:
+    build:
+      context: ./services/user-service/srs
+      dockerfile: Dockerfile
+    container_name: user-service
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+    depends_on:
+      - mongodb
+    networks:
+      - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3003/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Payment Service
+  payment-service:
+    build:
+      context: ./services/payment-service/srs
+      dockerfile: Dockerfile
+    container_name: payment-service
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
+      - VNP_TMN_CODE=DEMOV210
+      - VNP_HASH_SECRET=RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ
+      - VNP_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+      - VNP_RETURN_URL=http://10.0.2.2:3000/api/payment/vnpay-return
+      - VNP_IPN_URL=http://payment-service:3004/api/payment/vnpay-ipn
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3005
+      - BOOKING_SERVICE_URL=http://booking-service:3002
+      - INTERNAL_API_KEY=internal-secret-key
+    depends_on:
+      - mongodb
+      - notification-service
+    networks:
+      - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3004/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./services/notification-service/srs
+      dockerfile: Dockerfile
+    container_name: notification-service
+    restart: unless-stopped
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/booking_ticket_movie?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRES_IN=7d
+      - INTERNAL_API_KEY=internal-secret-key
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_PRIVATE_KEY_ID=${FIREBASE_PRIVATE_KEY_ID}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+    depends_on:
+      - mongodb
+    networks:
+      - movie-booking-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3005/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    depends_on:
+      - auth-service
+      - booking-service
+      - user-service
+      - payment-service
+      - notification-service
+    networks:
+      - movie-booking-network
+
+networks:
+  movie-booking-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local

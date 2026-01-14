@@ -26,14 +26,18 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    fcmToken: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true } // Tự động thêm createdAt và updatedAt
 );
 
-// Middleware:
+// Middleware: Hash password trước khi save
 userSchema.pre("save", async function (next) {
-  // Chỉ băm mật khẩu nếu nó được thay đổi hoặc mới tạo
-  if (this.isModified("password")) {
+  // Chỉ hash nếu password được thay đổi hoặc mới tạo
+  if (!this.isModified("password")) {
     return next();
   }
 
