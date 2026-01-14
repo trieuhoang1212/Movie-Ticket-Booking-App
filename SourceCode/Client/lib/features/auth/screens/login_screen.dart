@@ -20,17 +20,15 @@ class LoginScreen extends StatelessWidget {
     );
 
     try {
-      // 1. Kích hoạt luồng xác thực Google (Mở popup chọn tài khoản)
+      // 1. Kích hoạt luồng xác thực Google
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-      // Nếu user hủy (bấm ra ngoài hoặc bấm cancel)
       if (googleUser == null) {
-        if (context.mounted) Navigator.pop(context); // Tắt loading
+        if (context.mounted) Navigator.pop(context);
         return;
       }
 
-      // 2. Lấy thông tin xác thực (Token) từ request
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
