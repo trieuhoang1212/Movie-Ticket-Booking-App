@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 1. Import Firebase Auth
 import 'movie_detail_screen.dart';
 import 'favorite_screen.dart';
 import 'my_tickets_screen.dart';
+// 2. Import Profile Screen (Đảm bảo đường dẫn đúng)
+import '../../profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,9 +15,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
   int _currentHotMovieIndex = 0;
   int _currentNowShowingIndex = 0;
+
+  // --- 3. KHAI BÁO BIẾN USER ---
+  User? _currentUser = FirebaseAuth.instance.currentUser;
+
+  // --- 4. HÀM LÀM MỚI USER (Gọi khi quay lại từ trang Profile) ---
+  Future<void> _refreshUser() async {
+    await _currentUser?.reload(); // Lệnh này bắt Firebase tải lại data mới nhất
+    setState(() {
+      _currentUser = FirebaseAuth.instance.currentUser;
+    });
+  }
+
   // Danh sách lưu phim yêu thích
   final List<Map<String, String>> _favoriteMovies = [];
   void _toggleFavorite(Map<String, String> movie) {
@@ -26,10 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
   }
-  // -------------------------
 
-
-  // Mock data
+  // Mock data (Giữ nguyên như cũ)
   final List<Map<String, String>> hotMovies = [
     {
       "title": "Zootopia 2",
@@ -55,37 +67,22 @@ class _HomeScreenState extends State<HomeScreen> {
       "genre": "Hài hước . Hành động",
       "rating": "8.0/10"
     },
-    {
-      "title": "Truy tìm Long Diên Hương",
-      "image": "https://cdn.galaxycine.vn/media/2025/1/15/men-in-black-500_1736932475681.jpg",
-      "duration": "1h 48m",
-      "genre": "Hài hước . Hành động",
-      "rating": "8.0/10"
-    },
-    {
-      "title": "Truy tìm Long Diên Hương",
-      "image": "https://cdn.galaxycine.vn/media/2025/1/15/men-in-black-500_1736932475681.jpg",
-      "duration": "1h 48m",
-      "genre": "Hài hước . Hành động",
-      "rating": "8.0/10"
-    },
+    // ... (Các phim khác giữ nguyên)
   ];
 
   @override
   Widget build(BuildContext context) {
-    // --- 2. DANH SÁCH CÁC MÀN HÌNH TƯƠNG ỨNG VỚI TAB ---
     final List<Widget> pages = [
       _buildHomeContent(),
       const MyTicketsScreen(),
-      const Center(child: Text("Tìm kiếm", style: TextStyle(color: Colors.white))),   // Index 2
+      const Center(child: Text("Tìm kiếm", style: TextStyle(color: Colors.white))),
       FavoriteScreen(favoriteMovies: _favoriteMovies),
-      const Center(child: Text("Thông báo", style: TextStyle(color: Colors.white))),  // Index 4
+      const Center(child: Text("Thông báo", style: TextStyle(color: Colors.white))),
     ];
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: pages[_selectedIndex],
-
       bottomNavigationBar: _buildBottomNavBar(),
     );
   }
@@ -94,15 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(
       children: [
         Positioned.fill(
-          child: Image.asset(
-            'assets/images/BG.png',
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
         ),
         Positioned.fill(
-          child: Container(
-            color: const Color(0xFF151720).withOpacity(0.4),
-          ),
+          child: Container(color: const Color(0xFF151720).withOpacity(0.4)),
         ),
         SafeArea(
           child: SingleChildScrollView(
@@ -110,31 +102,25 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(),
+                _buildHeader(), // <--- GỌI WIDGET HEADER ĐÃ SỬA
                 const SizedBox(height: 48),
 
-                // Phim hot
                 _buildSectionTitle("Phim đang hot"),
                 const SizedBox(height: 16),
                 _buildMovieSlider(
                   hotMovies,
                   currentIndex: _currentHotMovieIndex,
-                  onPageChanged: (index) {
-                    setState(() => _currentHotMovieIndex = index);
-                  },
+                  onPageChanged: (index) => setState(() => _currentHotMovieIndex = index),
                 ),
 
                 const SizedBox(height: 48),
 
-                // Phim đang chiếu
                 _buildSectionTitle("Phim đang chiếu"),
                 const SizedBox(height: 16),
                 _buildMovieSlider(
                   nowShowingMovies,
                   currentIndex: _currentNowShowingIndex,
-                  onPageChanged: (index) {
-                    setState(() => _currentNowShowingIndex = index);
-                  },
+                  onPageChanged: (index) => setState(() => _currentNowShowingIndex = index),
                 ),
 
                 const SizedBox(height: 80),
@@ -146,34 +132,73 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // --- 5. WIDGET HEADER ĐÃ ĐƯỢC CẬP NHẬT ---
   Widget _buildHeader() {
+    // Lấy tên và ảnh từ User (nếu null thì dùng giá trị mặc định)
+    String displayName = _currentUser?.displayName ?? "User";
+
+    // Xử lý ảnh: Ưu tiên ảnh Firebase > Ảnh placeholder
+    ImageProvider avatarImage;
+    if (_currentUser?.photoURL != null) {
+      avatarImage = NetworkImage(_currentUser!.photoURL!);
+    } else {
+      // Dùng ảnh mạng mẫu nếu chưa có ảnh
+      avatarImage = const NetworkImage("https://i.pravatar.cc/150?img=11");
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          "Xin Chào, User",
-          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        Column( // Dùng Column để text căn lề đẹp hơn nếu tên dài
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Xin chào,",
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            Text(
+              displayName, // Hiển thị tên thật
+              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
-        const CircleAvatar(
-          radius: 20,
-          backgroundImage: NetworkImage("https://i.pravatar.cc/150?img=11"),
+
+        // BỌC AVATAR TRONG GESTURE DETECTOR ĐỂ BẤM ĐƯỢC
+        GestureDetector(
+          onTap: () async {
+            // Chuyển sang ProfileScreen và chờ kết quả trả về (true/false)
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+
+            // Nếu ProfileScreen trả về true (tức là có thay đổi), ta reload lại user
+            if (result == true) {
+              _refreshUser();
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white24, width: 2),
+            ),
+            child: CircleAvatar(
+              radius: 22,
+              backgroundImage: avatarImage,
+              backgroundColor: Colors.grey[800],
+            ),
+          ),
         ),
       ],
     );
   }
 
+  // ... (Phần còn lại giữ nguyên: _buildSectionTitle, _buildMovieSlider, _buildBottomNavBar)
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-    );
+    return Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold));
   }
 
-  Widget _buildMovieSlider(
-      List<Map<String, String>> movies, {
-        required int currentIndex,
-        required Function(int) onPageChanged,
-      }) {
+  Widget _buildMovieSlider(List<Map<String, String>> movies, {required int currentIndex, required Function(int) onPageChanged}) {
     return Column(
       children: [
         SizedBox(
@@ -188,7 +213,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: const EdgeInsets.only(right: 8),
                 child: Stack(
                   children: [
-
                     Positioned.fill(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
@@ -199,13 +223,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-
                     Positioned(
                       top: 16, right: 16,
                       child: GestureDetector(
-                        onTap: () {
-                          _toggleFavorite(movie); // Gọi hàm khi bấm
-                        },
+                        onTap: () => _toggleFavorite(movie),
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -245,14 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Spacer(),
                                 Container(
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        Color(0xFFFF4444),
-                                        Color(0xFFCC0000),
-                                      ],
-                                    ),
+                                    gradient: const LinearGradient(colors: [Color(0xFFFF4444), Color(0xFFCC0000)]),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: ElevatedButton(
@@ -260,9 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => MovieDetailScreen(
-                                            movieData: movie,
-                                          ),
+                                          builder: (context) => MovieDetailScreen(movieData: movie),
                                         ),
                                       );
                                     },
@@ -273,13 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                     ),
-                                    child: Row(
-                                      children: const [
-                                        Icon(Icons.play_circle_outline, size: 18),
-                                        SizedBox(width: 4),
-                                        Text("Đặt vé ngay", style: TextStyle(fontWeight: FontWeight.bold)),
-                                      ],
-                                    ),
+                                    child: Row(children: const [Icon(Icons.play_circle_outline, size: 18), SizedBox(width: 4), Text("Đặt vé ngay", style: TextStyle(fontWeight: FontWeight.bold))]),
                                   ),
                                 )
                               ],
@@ -295,8 +301,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 16),
-
-
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(movies.length, (index) {
@@ -320,10 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBottomNavBar() {
     final double bottomPadding = MediaQuery.of(context).padding.bottom;
     return Container(
-      padding: EdgeInsets.only(
-        top: 16,
-        bottom: 16 + bottomPadding,
-      ),
+      padding: EdgeInsets.only(top: 16, bottom: 16 + bottomPadding),
       decoration: BoxDecoration(
         color: const Color(0xFF151720).withOpacity(0.5),
         border: const Border(top: BorderSide(color: Colors.white10)),
@@ -334,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildNavItem(Icons.home_filled, 0),
           _buildNavItem(Icons.confirmation_number_outlined, 1),
           _buildNavItem(Icons.search, 2),
-          _buildNavItem(Icons.favorite, 3), // Icon Yêu thích (Index 3)
+          _buildNavItem(Icons.favorite, 3),
           _buildNavItem(Icons.notifications_none, 4),
         ],
       ),
