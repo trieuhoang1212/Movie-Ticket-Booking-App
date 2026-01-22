@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import '../models/movie_model.dart';
 import '../services/movie_service.dart';
 import 'my_tickets_screen.dart';
@@ -21,18 +22,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final MovieService _movieService = MovieService();
 
-  // Dữ liệu phim từ API
   List<Movie> hotMovies = [];
   List<Movie> nowShowingMovies = [];
-
-  // Danh sách phim yêu thích (tạm thời mock)
   final List<Map<String, String>> _favoriteMovies = [];
 
-  // Trạng thái loading
   bool isLoadingHotMovies = true;
   bool isLoadingNowShowingMovies = true;
 
-  // Thông báo lỗi
   String? errorMessage;
 
   @override
@@ -41,13 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadMovies();
   }
 
-  // Load dữ liệu phim từ API
   Future<void> _loadMovies() async {
     try {
-      // Load phim đang hot (now_showing + isHot = true)
-      final hot = await _movieService.getHotMovies();
+      // await Future.delayed(const Duration(seconds: 2)); // Dùng để test skeleton
 
-      // Load tất cả phim đang chiếu (now_showing)
+      final hot = await _movieService.getHotMovies();
       final nowShowing = await _movieService.getNowShowingMovies();
 
       setState(() {
@@ -66,16 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Render màn hình theo tab được chọn
   Widget _getCurrentScreen() {
     switch (_selectedIndex) {
-      case 1: // Vé của tôi
+      case 1:
         return const MyTicketsScreen();
-      case 3: // Yêu thích
+      case 3:
         return FavoriteScreen(favoriteMovies: _favoriteMovies);
-      case 4: // Thông báo
+      case 4:
         return const NotificationScreen();
-      default: // Home
+      default:
         return _buildHomeContent();
     }
   }
@@ -89,13 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
           Positioned.fill(
             child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
           ),
-
           Positioned.fill(
             child: Container(
               color: const Color(0xFF151720).withValues(alpha: 0.4),
             ),
           ),
-
           SafeArea(child: _getCurrentScreen()),
         ],
       ),
@@ -106,105 +97,77 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHomeContent() {
     return errorMessage != null
         ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  errorMessage!,
-                  style: const TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _loadMovies,
-                  child: const Text('Thử lại'),
-                ),
-              ],
-            ),
-          )
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            errorMessage!,
+            style: const TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(onPressed: _loadMovies, child: const Text('Thử lại')),
+        ],
+      ),
+    )
         : SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 48),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          const SizedBox(height: 48),
 
-                // Phim hot
-                _buildSectionTitle("Phim đang hot"),
-                const SizedBox(height: 16),
-                isLoadingHotMovies
-                    ? const Center(child: CircularProgressIndicator())
-                    : _buildMovieSlider(
-                        hotMovies,
-                        currentIndex: _currentHotMovieIndex,
-                        onPageChanged: (index) {
-                          setState(() => _currentHotMovieIndex = index);
-                        },
-                      ),
+          // --- PHIM HOT ---
+          _buildSectionTitle("Phim đang hot"),
+          const SizedBox(height: 16),
+          isLoadingHotMovies
+              ? const MovieSkeletonCard()
+              : _buildMovieSlider(
+            hotMovies,
+            currentIndex: _currentHotMovieIndex,
+            onPageChanged: (index) => setState(() => _currentHotMovieIndex = index),
+          ),
 
-                const SizedBox(height: 48),
+          const SizedBox(height: 48),
 
-                // Phim đang chiếu
-                _buildSectionTitle("Phim đang chiếu"),
-                const SizedBox(height: 16),
-                isLoadingNowShowingMovies
-                    ? const Center(child: CircularProgressIndicator())
-                    : _buildMovieSlider(
-                        nowShowingMovies,
-                        currentIndex: _currentNowShowingIndex,
-                        onPageChanged: (index) {
-                          setState(() => _currentNowShowingIndex = index);
-                        },
-                      ),
+          // --- PHIM ĐANG CHIẾU ---
+          _buildSectionTitle("Phim đang chiếu"),
+          const SizedBox(height: 16),
+          isLoadingNowShowingMovies
+              ? const MovieSkeletonCard()
+              : _buildMovieSlider(
+            nowShowingMovies,
+            currentIndex: _currentNowShowingIndex,
+            onPageChanged: (index) => setState(() => _currentNowShowingIndex = index),
+          ),
 
-                const SizedBox(height: 80),
-              ],
-            ),
-          );
+          const SizedBox(height: 80),
+        ],
+      ),
+    );
   }
 
   Widget _buildHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          "Xin Chào, User",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const CircleAvatar(
-          radius: 20,
-          backgroundImage: NetworkImage("https://i.pravatar.cc/150?img=11"),
-        ),
+        const Text("Xin Chào, User", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+        const CircleAvatar(radius: 20, backgroundImage: NetworkImage("https://i.pravatar.cc/150?img=11")),
       ],
     );
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
-    );
+    return Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold));
   }
 
   Widget _buildMovieSlider(
-    List<Movie> movies, {
-    required int currentIndex,
-    required Function(int) onPageChanged,
-  }) {
-    if (movies.isEmpty) {
-      return const Center(
-        child: Text('Không có phim nào', style: TextStyle(color: Colors.white)),
-      );
-    }
+      List<Movie> movies, {
+        required int currentIndex,
+        required Function(int) onPageChanged,
+      }) {
+    if (movies.isEmpty) return const Center(child: Text('Không có phim nào', style: TextStyle(color: Colors.white)));
 
     return Column(
       children: [
@@ -218,7 +181,6 @@ class _HomeScreenState extends State<HomeScreen> {
               final movie = movies[index];
               return GestureDetector(
                 onTap: () {
-                  // Chuyển đến màn hình chi tiết phim
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -239,175 +201,66 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: const EdgeInsets.only(right: 8),
                   child: Stack(
                     children: [
+                      // Poster ảnh
                       Positioned.fill(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(24),
-                          child:
-                              movie.posterUrl != null &&
-                                  movie.posterUrl!.isNotEmpty
+                          child: movie.posterUrl != null && movie.posterUrl!.isNotEmpty
                               ? Image.network(
-                                  movie.posterUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (c, o, s) => Container(
-                                    color: Colors.grey,
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.movie,
-                                        color: Colors.white,
-                                        size: 50,
-                                      ),
-                                    ),
-                                  ),
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        }
-                                        return Container(
-                                          color: Colors.grey,
-                                          child: const Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        );
-                                      },
-                                )
-                              : Container(
-                                  color: Colors.grey,
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.movie,
-                                      color: Colors.white,
-                                      size: 50,
-                                    ),
-                                  ),
-                                ),
+                            movie.posterUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (c, o, s) => Container(color: Colors.grey, child: const Icon(Icons.movie, size: 50)),
+                          )
+                              : Container(color: Colors.grey, child: const Icon(Icons.movie, size: 50)),
                         ),
                       ),
-
+                      // Icon yêu thích
                       Positioned(
-                        top: 16,
-                        right: 16,
+                        top: 16, right: 16,
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
+                            // SỬA: withOpacity -> withValues
+                              color: Colors.white.withValues(alpha: 0.2),
+                              shape: BoxShape.circle
                           ),
-                          child: const Icon(
-                            Icons.favorite_border,
-                            color: Colors.white,
-                            size: 20,
-                          ),
+                          child: const Icon(Icons.favorite_border, color: Colors.white, size: 20),
                         ),
                       ),
+                      // Box thông tin bên dưới
                       Positioned(
-                        bottom: 16,
-                        left: 16,
-                        right: 16,
+                        bottom: 16, left: 16, right: 16,
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF1F222A,
-                            ).withValues(alpha: 0.95),
+                            // SỬA: withOpacity -> withValues
+                            color: const Color(0xFF1F222A).withValues(alpha: 0.95),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                movie.title,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              Text(movie.title, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
                               const SizedBox(height: 4),
-                              Text(
-                                movie.durationFormatted,
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 12,
-                                ),
-                              ),
+                              Text(movie.durationFormatted, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                               const SizedBox(height: 4),
-                              Text(
-                                movie.genreFormatted,
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              Text(movie.genreFormatted, style: TextStyle(color: Colors.grey[400], fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
                               const SizedBox(height: 16),
                               Row(
                                 children: [
-                                  const Icon(
-                                    Icons.star,
-                                    color: Color(0xFFFF4444),
-                                    size: 18,
-                                  ),
+                                  const Icon(Icons.star, color: Color(0xFFFF4444), size: 18),
                                   const SizedBox(width: 4),
-                                  Text(
-                                    movie.ratingFormatted,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  Text(movie.ratingFormatted, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                   const Spacer(),
                                   ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              MovieDetailScreen(
-                                                movieData: {
-                                                  'id': movie.id,
-                                                  'title': movie.title,
-                                                  'image':
-                                                      movie.posterUrl ?? '',
-                                                  'duration':
-                                                      movie.durationFormatted,
-                                                  'genre': movie.genreFormatted,
-                                                  'rating':
-                                                      movie.ratingFormatted,
-                                                },
-                                              ),
-                                        ),
-                                      );
-                                    },
+                                    onPressed: () {},
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFFFF4444),
                                       foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 10,
-                                      ),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                     ),
-                                    child: Row(
-                                      children: const [
-                                        Icon(
-                                          Icons.play_circle_outline,
-                                          size: 18,
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          "Đặt vé ngay",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    child: Row(children: const [Icon(Icons.play_circle_outline, size: 18), SizedBox(width: 4), Text("Đặt vé ngay", style: TextStyle(fontWeight: FontWeight.bold))]),
                                   ),
                                 ],
                               ),
@@ -423,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 16),
-
+        // Dot indicator
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(movies.length, (index) {
@@ -448,8 +301,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF151720).withValues(alpha: 0.5),
-        border: const Border(top: BorderSide(color: Colors.white10)),
+          color: const Color(0xFF151720).withValues(alpha: 0.5),
+          border: const Border(top: BorderSide(color: Colors.white10))
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -467,13 +320,86 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildNavItem(IconData icon, int index) {
     final isSelected = _selectedIndex == index;
     return IconButton(
-      onPressed: () {
-        setState(() => _selectedIndex = index);
-      },
-      icon: Icon(
-        icon,
-        color: isSelected ? Colors.white : Colors.grey,
-        size: 28,
+      onPressed: () => setState(() => _selectedIndex = index),
+      icon: Icon(icon, color: isSelected ? Colors.white : Colors.grey, size: 28),
+    );
+  }
+}
+
+// ==========================================
+// WIDGET SKELETON (HIỆU ỨNG LOADING)
+// ==========================================
+class MovieSkeletonCard extends StatelessWidget {
+  const MovieSkeletonCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final baseColor = Colors.grey[800]!;
+    final highlightColor = Colors.grey[700]!;
+
+    return SizedBox(
+      height: 380,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          Shimmer.fromColors(
+            baseColor: baseColor,
+            highlightColor: highlightColor,
+            child: Container(
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 24,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                // SỬA: withOpacity -> withValues
+                color: const Color(0xFF1F222A).withValues(alpha: 0.95),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Shimmer.fromColors(
+                baseColor: baseColor,
+                highlightColor: highlightColor,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(height: 20, width: 200, color: Colors.black),
+                    const SizedBox(height: 8),
+                    Container(height: 20, width: 150, color: Colors.black),
+                    const SizedBox(height: 12),
+                    Container(height: 12, width: 100, color: Colors.black),
+                    const SizedBox(height: 8),
+                    Container(height: 12, width: 120, color: Colors.black),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Container(height: 18, width: 18, color: Colors.black),
+                        const SizedBox(width: 4),
+                        Container(height: 14, width: 30, color: Colors.black),
+                        const Spacer(),
+                        Container(
+                          height: 40,
+                          width: 120,
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

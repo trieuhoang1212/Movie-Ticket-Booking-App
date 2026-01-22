@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../services/database_helper.dart';
 import '../models/notification_model.dart';
 
-// Chuyển sang StatefulWidget để có thể load lại dữ liệu
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
@@ -29,7 +28,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     });
   }
 
-  // Hàm tính thời gian "15m", "1h"
+  // Hàm tính thời gian
   String _formatTime(String timeString) {
     DateTime time = DateTime.parse(timeString);
     Duration diff = DateTime.now().difference(time);
@@ -103,8 +102,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> _addTestBookingNotification() async {
     final notification = NotificationModel(
       title: '🎉 Đặt vé thành công!',
-      body:
-          'Bạn đã đặt vé phim "Avatar 3: The Way of Water" - Ghế: A1, A2, A3. Tổng tiền: 450000đ',
+      body: 'Bạn đã đặt vé phim "Avatar 3: The Way of Water" - Ghế: A1, A2. Tổng tiền: 450000đ',
       type: 'booking',
       time: DateTime.now().toString(),
       isRead: 0,
@@ -127,7 +125,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF151720),
+      // 1. Cho phép nội dung tràn lên sau AppBar
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -140,7 +139,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
             color: Colors.white,
           ),
         ),
-        // Thêm nút refresh và xóa tất cả
         actions: [
           IconButton(
             icon: const Icon(Icons.add_alert, color: Colors.orange),
@@ -159,16 +157,43 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _notifications.isEmpty
-          ? const Center(
-              child: Text(
-                "Không có thông báo nào",
-                style: TextStyle(color: Colors.grey),
+      // 2. Sử dụng Stack để thêm hình nền
+      body: Stack(
+        children: [
+          // LỚP 1: ẢNH NỀN
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/BG.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          // LỚP 2: LỚP PHỦ MÀU ĐEN MỜ
+          Positioned.fill(
+            child: Container(
+              color: const Color(0xFF151720).withValues(alpha: 0.5),
+            ),
+          ),
+
+          // LỚP 3: NỘI DUNG CHÍNH (Trong SafeArea)
+          SafeArea(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _notifications.isEmpty
+                ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.notifications_off_outlined, size: 60, color: Colors.grey[600]),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Không có thông báo nào",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
               ),
             )
-          : ListView.separated(
+                : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: _notifications.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
@@ -229,6 +254,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 );
               },
             ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -236,7 +264,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
     bool isRead = item.isRead == 1;
     IconData iconData;
 
-    // Logic chọn icon
     switch (item.type) {
       case 'payment':
       case 'booking':
@@ -252,8 +279,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F222A),
+        // Làm nền hộp thông báo hơi trong suốt để thấy background
+        color: const Color(0xFF1F222A).withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +295,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF2B2D3A),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                  border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
                 ),
                 child: Icon(iconData, color: const Color(0xFFFF4444), size: 24),
               ),
@@ -305,7 +334,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                     ),
                     Text(
-                      _formatTime(item.time), // Format thời gian
+                      _formatTime(item.time),
                       style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],

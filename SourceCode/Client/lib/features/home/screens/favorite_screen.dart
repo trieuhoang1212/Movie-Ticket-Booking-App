@@ -12,9 +12,8 @@ class FavoriteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // LƯU Ý: Đã xóa phần mock data cũ ở đây
-
     return Scaffold(
+      // Cho phép ảnh nền tràn lên sau AppBar
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -24,38 +23,49 @@ class FavoriteScreen extends StatelessWidget {
           "Danh sách yêu thích",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        // Nút Back (Trong ngữ cảnh BottomNav có thể không cần, nhưng giữ lại theo thiết kế của bạn)
+        // Nút Back
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
+            onPressed: () {
+              // Nếu màn hình này nằm trong TabBar thì nút này có thể không cần thiết,
+              // nhưng nếu được push từ màn hình khác thì cần pop.
+              // Dùng maybePop để an toàn.
+              Navigator.maybePop(context);
+            },
+          ),
         ),
       ),
       body: Stack(
         children: [
-          // 1. Nền Background chung
+          // 1. ẢNH NỀN (Background Image)
           Positioned.fill(
             child: Image.asset(
               'assets/images/BG.png',
               fit: BoxFit.cover,
             ),
           ),
+
+          // 2. LỚP PHỦ MÀU ĐEN MỜ (Overlay)
           Positioned.fill(
             child: Container(
-              color: const Color(0xFF151720).withOpacity(0.9),
+              // Dùng withValues thay cho withOpacity
+              color: const Color(0xFF151720).withValues(alpha: 0.5),
             ),
           ),
 
-          // 2. Nội dung danh sách (Đã sửa logic)
+          // 3. NỘI DUNG DANH SÁCH
           favoriteMovies.isEmpty
-              ? _buildEmptyState() // Nếu list rỗng thì hiện thông báo
+              ? _buildEmptyState()
               : SafeArea(
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: favoriteMovies.length, // Dùng độ dài list thực tế
+              itemCount: favoriteMovies.length,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final movie = favoriteMovies[index];
@@ -73,12 +83,12 @@ class FavoriteScreen extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.favorite_border, size: 80, color: Colors.grey),
-          SizedBox(height: 16),
+        children: [
+          Icon(Icons.favorite_border, size: 80, color: Colors.grey[600]),
+          const SizedBox(height: 16),
           Text(
             "Chưa có phim yêu thích",
-            style: TextStyle(color: Colors.grey, fontSize: 16),
+            style: TextStyle(color: Colors.grey[400], fontSize: 16),
           ),
         ],
       ),
@@ -98,8 +108,11 @@ class FavoriteScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF2B2D3A),
+          // Làm nền item hơi trong suốt để thấy background phía sau
+          color: const Color(0xFF2B2D3A).withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(20),
+          // Thêm viền nhẹ
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Row(
           children: [
@@ -107,11 +120,16 @@ class FavoriteScreen extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
-                movie["image"] ?? "", // Thêm check null an toàn
+                movie["image"] ?? "",
                 height: 100,
                 width: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (c, o, s) => Container(height: 100, width: 80, color: Colors.grey),
+                errorBuilder: (c, o, s) => Container(
+                  height: 100,
+                  width: 80,
+                  color: Colors.grey,
+                  child: const Icon(Icons.movie, color: Colors.white),
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -128,6 +146,8 @@ class FavoriteScreen extends StatelessWidget {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -161,7 +181,7 @@ class FavoriteScreen extends StatelessWidget {
               ),
             ),
 
-            // Icon Tim (luôn hiển thị màu đỏ vì đây là màn hình yêu thích)
+            // Icon Tim
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
