@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../home/screens/home_screen.dart';
 import '../../home/services/fcm_service.dart';
 
@@ -17,10 +18,10 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   final _authService = AuthService();
   bool _isLoading = false;
 
-  // --- 2. HÀM XỬ LÝ QUÊN MẬT KHẨU (LOGIC FIREBASE) ---
   void _handleForgotPassword() {
-    final TextEditingController resetEmailController =
-    TextEditingController(text: _emailController.text);
+    final TextEditingController resetEmailController = TextEditingController(
+      text: _emailController.text,
+    );
 
     showDialog(
       context: context,
@@ -28,8 +29,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         backgroundColor: const Color(0xFF1F222A), // Nền tối cho hợp theme
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
-            "Quên mật khẩu?",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+          "Quên mật khẩu?",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -47,10 +48,10 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 hintText: "example@email.com",
                 hintStyle: TextStyle(color: Colors.grey),
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey)
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
                 focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFCC0000))
+                  borderSide: BorderSide(color: Color(0xFFCC0000)),
                 ),
                 prefixIcon: Icon(Icons.email_outlined, color: Colors.white70),
               ),
@@ -78,10 +79,13 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                 showDialog(
                   context: context,
                   barrierDismissible: false,
-                  builder: (context) => const Center(child: CircularProgressIndicator()),
+                  builder: (context) =>
+                      const Center(child: CircularProgressIndicator()),
                 );
 
-                await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                await FirebaseAuth.instance.sendPasswordResetEmail(
+                  email: email,
+                );
 
                 if (context.mounted) {
                   Navigator.pop(context);
@@ -89,7 +93,9 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text("Đã gửi link khôi phục! Vui lòng kiểm tra Email."),
+                      content: Text(
+                        "Đã gửi link khôi phục! Vui lòng kiểm tra Email.",
+                      ),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -105,21 +111,26 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   }
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+                    SnackBar(
+                      content: Text(errorMessage),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                 }
               }
             },
             child: const Text(
-                "Gửi yêu cầu",
-                style: TextStyle(color: Color(0xFFCC0000), fontWeight: FontWeight.bold)
+              "Gửi yêu cầu",
+              style: TextStyle(
+                color: Color(0xFFCC0000),
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
       ),
     );
   }
-  // ----------------------------------------------------
 
   void _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -156,7 +167,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false,
+          (route) => false,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -250,6 +261,21 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         ),
                       ),
                     ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _handleForgotPassword, // Gọi hàm xử lý popup
+                        child: const Text(
+                          "Quên mật khẩu?",
+                          style: TextStyle(
+                            color: Color(0xFFCC0000), // Màu đỏ theo yêu cầu
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
 
                     // --- 3. NÚT QUÊN MẬT KHẨU ---
                     Align(

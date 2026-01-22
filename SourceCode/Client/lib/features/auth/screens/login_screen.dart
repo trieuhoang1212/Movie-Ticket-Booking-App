@@ -20,7 +20,6 @@ class LoginScreen extends StatelessWidget {
     );
 
     try {
-      // 1. Kích hoạt luồng xác thực Google
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
@@ -32,13 +31,11 @@ class LoginScreen extends StatelessWidget {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      // 3. Tạo credential mới cho Firebase từ Token của Google
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // 4. Đăng nhập vào Firebase
       await FirebaseAuth.instance.signInWithCredential(credential);
 
       // 4.1. Lưu FCM token lên server
@@ -46,14 +43,12 @@ class LoginScreen extends StatelessWidget {
         final fcmService = FCMService();
         await fcmService.saveFCMToken();
       } catch (e) {
-        print('⚠️ Failed to save FCM token: $e');
+        print('Failed to save FCM token: $e');
       }
 
-      // 5. Nếu thành công
       if (context.mounted) {
         Navigator.pop(context); // Tắt loading
 
-        // Chuyển sang HomeScreen và xóa lịch sử để không back lại được Login
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
           (Route<dynamic> route) => false,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../models/movie_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../profile/profile_screen.dart';
 import '../services/movie_service.dart';
 import 'my_tickets_screen.dart';
 import 'favorite_screen.dart';
@@ -16,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
   int _currentHotMovieIndex = 0;
   int _currentNowShowingIndex = 0;
 
@@ -312,6 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildNavItem(Icons.search, 2),
           _buildNavItem(Icons.favorite_border, 3),
           _buildNavItem(Icons.notifications_none, 4),
+          _buildNavItem(Icons.person_outline, 5),
         ],
       ),
     );
@@ -326,9 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ==========================================
-// WIDGET SKELETON (HIỆU ỨNG LOADING)
-// ==========================================
+
 class MovieSkeletonCard extends StatelessWidget {
   const MovieSkeletonCard({super.key});
 
