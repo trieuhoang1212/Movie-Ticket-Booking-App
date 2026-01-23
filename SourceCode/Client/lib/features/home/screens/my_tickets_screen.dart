@@ -53,7 +53,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
           _errorMessage = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để xem vé.';
         } else if (e.toString().contains('Failed to load bookings')) {
           _errorMessage =
-          'Không thể kết nối đến server. Vui lòng kiểm tra kết nối.';
+              'Không thể kết nối đến server. Vui lòng kiểm tra kết nối.';
         } else {
           _errorMessage = 'Có lỗi xảy ra: ${e.toString()}';
         }
@@ -86,7 +86,11 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 18,
+              color: Colors.white,
+            ),
             onPressed: () {
               Navigator.maybePop(context);
             },
@@ -94,7 +98,11 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
         ),
         title: const Text(
           "Vé của tôi",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
       ),
       // 2. Sử dụng Stack để xếp chồng Background và Nội dung
@@ -125,7 +133,9 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 24),
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1F222A).withValues(alpha: 0.8), // Thêm chút trong suốt
+                    color: const Color(
+                      0xFF1F222A,
+                    ).withValues(alpha: 0.8), // Thêm chút trong suốt
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -144,147 +154,145 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                       ? const Center(child: CircularProgressIndicator())
                       : _errorMessage != null
                       ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            color: Colors.grey,
-                            size: 64,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            _errorMessage!,
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 16,
+                          child: Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.error_outline,
+                                  color: Colors.grey,
+                                  size: 64,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  _errorMessage!,
+                                  style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: 16,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 24),
+                                ElevatedButton(
+                                  onPressed: _loadBookings,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFF4444),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text("Thử lại"),
+                                ),
+                              ],
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: _loadBookings,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFFF4444),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text("Thử lại"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
+                        )
                       : displayBookings.isEmpty
                       ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.airplane_ticket_outlined, size: 60, color: Colors.grey[600]),
-                        const SizedBox(height: 16),
-                        Text(
-                          "Chưa có vé nào",
-                          style:
-                          TextStyle(color: Colors.grey[400]),
-                        ),
-                      ],
-                    ),
-                  )
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.airplane_ticket_outlined,
+                                size: 60,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "Chưa có vé nào",
+                                style: TextStyle(color: Colors.grey[400]),
+                              ),
+                            ],
+                          ),
+                        )
                       : RefreshIndicator(
-                    onRefresh: _loadBookings,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24),
-                      itemCount: displayBookings.length,
-                      itemBuilder: (context, index) {
-                        final booking = displayBookings[index];
-                        final canDelete =
-                            booking.status == 'completed' ||
-                                booking.status == 'cancelled';
+                          onRefresh: _loadBookings,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            itemCount: displayBookings.length,
+                            itemBuilder: (context, index) {
+                              final booking = displayBookings[index];
+                              final canDelete =
+                                  booking.status == 'completed' ||
+                                  booking.status == 'cancelled';
 
-                        if (canDelete) {
-                          return Dismissible(
-                            key: Key(booking.id),
-                            direction:
-                            DismissDirection.endToStart,
-                            background: Container(
-                              margin: const EdgeInsets.only(
-                                  bottom: 20),
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(
-                                  right: 20),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius:
-                                BorderRadius.circular(20),
-                              ),
-                              child: const Icon(
-                                Icons.delete,
-                                color: Colors.white,
-                                size: 32,
-                              ),
-                            ),
-                            confirmDismiss: (direction) async {
-                              return await showDialog<bool>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  backgroundColor:
-                                  const Color(0xFF1F222A),
-                                  title: const Text(
-                                    'Xóa vé?',
-                                    style: TextStyle(
-                                        color: Colors.white),
-                                  ),
-                                  content: Text(
-                                    'Bạn có chắc muốn xóa vé xem phim "${booking.showtime.movie.title}"?',
-                                    style: const TextStyle(
-                                        color: Colors.grey),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(
-                                              context, false),
-                                      child: const Text(
-                                        'Hủy',
-                                        style: TextStyle(
-                                            color: Colors.grey),
-                                      ),
+                              if (canDelete) {
+                                return Dismissible(
+                                  key: Key(booking.id),
+                                  direction: DismissDirection.endToStart,
+                                  background: Container(
+                                    margin: const EdgeInsets.only(bottom: 20),
+                                    alignment: Alignment.centerRight,
+                                    padding: const EdgeInsets.only(right: 20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(
-                                              context, true),
-                                      child: const Text(
-                                        'Xóa',
-                                        style: TextStyle(
-                                            color: Colors.red),
-                                      ),
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.white,
+                                      size: 32,
                                     ),
-                                  ],
-                                ),
-                              );
+                                  ),
+                                  confirmDismiss: (direction) async {
+                                    return await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        backgroundColor: const Color(
+                                          0xFF1F222A,
+                                        ),
+                                        title: const Text(
+                                          'Xóa vé?',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        content: Text(
+                                          'Bạn có chắc muốn xóa vé xem phim "${booking.showtime.movie.title}"?',
+                                          style: const TextStyle(
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, false),
+                                            child: const Text(
+                                              'Hủy',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, true),
+                                            child: const Text(
+                                              'Xóa',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  onDismissed: (direction) {
+                                    _deleteBooking(booking);
+                                  },
+                                  child: _buildTicketCard(booking),
+                                );
+                              } else {
+                                return _buildTicketCard(booking);
+                              }
                             },
-                            onDismissed: (direction) {
-                              _deleteBooking(booking);
-                            },
-                            child: _buildTicketCard(booking),
-                          );
-                        } else {
-                          return _buildTicketCard(booking);
-                        }
-                      },
-                    ),
-                  ),
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -307,9 +315,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected
-                ? const Color(0xFF3B3E4A)
-                : Colors.transparent,
+            color: isSelected ? const Color(0xFF3B3E4A) : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
@@ -342,9 +348,13 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F222A).withValues(alpha: 0.9), // Làm nền card hơi trong suốt một xíu cho đẹp
+        color: const Color(
+          0xFF1F222A,
+        ).withValues(alpha: 0.9), // Làm nền card hơi trong suốt một xíu cho đẹp
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)), // Thêm viền nhẹ
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+        ), // Thêm viền nhẹ
       ),
       child: Column(
         children: [
@@ -356,23 +366,23 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                 borderRadius: BorderRadius.circular(16),
                 child: booking.showtime.movie.posterUrl != null
                     ? Image.network(
-                  booking.showtime.movie.posterUrl!,
-                  width: 100,
-                  height: 120,
-                  fit: BoxFit.cover,
-                  errorBuilder: (c, o, s) => Container(
-                    width: 100,
-                    height: 120,
-                    color: Colors.grey,
-                    child: const Icon(Icons.movie, color: Colors.white),
-                  ),
-                )
+                        booking.showtime.movie.posterUrl!,
+                        width: 100,
+                        height: 120,
+                        fit: BoxFit.cover,
+                        errorBuilder: (c, o, s) => Container(
+                          width: 100,
+                          height: 120,
+                          color: Colors.grey,
+                          child: const Icon(Icons.movie, color: Colors.white),
+                        ),
+                      )
                     : Container(
-                  width: 100,
-                  height: 120,
-                  color: Colors.grey,
-                  child: const Icon(Icons.movie, color: Colors.white),
-                ),
+                        width: 100,
+                        height: 120,
+                        color: Colors.grey,
+                        child: const Icon(Icons.movie, color: Colors.white),
+                      ),
               ),
               const SizedBox(width: 16),
               // Thông tin vé

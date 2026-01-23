@@ -125,7 +125,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context, true),
+        ),
       ),
       body: Stack(
         children: [

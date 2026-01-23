@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../home/screens/home_screen.dart';
 import '../../home/services/fcm_service.dart';
 
@@ -18,6 +17,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   final _authService = AuthService();
   bool _isLoading = false;
 
+  // --- 2. HÀM XỬ LÝ QUÊN MẬT KHẨU (LOGIC FIREBASE) ---
   void _handleForgotPassword() {
     final TextEditingController resetEmailController = TextEditingController(
       text: _emailController.text,
@@ -131,6 +131,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
       ),
     );
   }
+  // ----------------------------------------------------
 
   void _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -235,7 +236,10 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         hintStyle: const TextStyle(color: Colors.white70),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.15),
-                        prefixIcon: const Icon(Icons.email, color: Colors.white),
+                        prefixIcon: const Icon(
+                          Icons.email,
+                          color: Colors.white,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -261,21 +265,6 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: _handleForgotPassword, // Gọi hàm xử lý popup
-                        child: const Text(
-                          "Quên mật khẩu?",
-                          style: TextStyle(
-                            color: Color(0xFFCC0000), // Màu đỏ theo yêu cầu
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
 
                     // --- 3. NÚT QUÊN MẬT KHẨU ---
                     Align(
@@ -292,8 +281,8 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         ),
                       ),
                     ),
-                    // ----------------------------
 
+                    // ----------------------------
                     const SizedBox(height: 10),
 
                     SizedBox(
@@ -308,15 +297,17 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                         ),
                         onPressed: _isLoading ? null : _handleLogin,
                         child: _isLoading
-                            ? const CircularProgressIndicator(color: Colors.white)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : const Text(
-                          "Đăng nhập",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                                "Đăng nhập",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                   ],

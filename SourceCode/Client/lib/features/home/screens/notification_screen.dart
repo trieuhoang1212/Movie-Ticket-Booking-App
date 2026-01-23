@@ -102,7 +102,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> _addTestBookingNotification() async {
     final notification = NotificationModel(
       title: '🎉 Đặt vé thành công!',
-      body: 'Bạn đã đặt vé phim "Avatar 3: The Way of Water" - Ghế: A1, A2. Tổng tiền: 450000đ',
+      body:
+          'Bạn đã đặt vé phim "Avatar 3: The Way of Water" - Ghế: A1, A2. Tổng tiền: 450000đ',
       type: 'booking',
       time: DateTime.now().toString(),
       isRead: 0,
@@ -162,10 +163,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         children: [
           // LỚP 1: ẢNH NỀN
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/BG.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
           ),
 
           // LỚP 2: LỚP PHỦ MÀU ĐEN MỜ
@@ -181,79 +179,85 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _notifications.isEmpty
                 ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.notifications_off_outlined, size: 60, color: Colors.grey[600]),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Không có thông báo nào",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ],
-              ),
-            )
-                : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: _notifications.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final item = _notifications[index];
-                return Dismissible(
-                  key: Key(item.id.toString()),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                  ),
-                  confirmDismiss: (direction) async {
-                    return await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        backgroundColor: const Color(0xFF1F222A),
-                        title: const Text(
-                          'Xóa thông báo?',
-                          style: TextStyle(color: Colors.white),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.notifications_off_outlined,
+                          size: 60,
+                          color: Colors.grey[600],
                         ),
-                        content: const Text(
-                          'Bạn có chắc muốn xóa thông báo này?',
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Không có thông báo nào",
                           style: TextStyle(color: Colors.grey),
                         ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text(
-                              'Hủy',
-                              style: TextStyle(color: Colors.grey),
-                            ),
+                      ],
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _notifications.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final item = _notifications[index];
+                      return Dismissible(
+                        key: Key(item.id.toString()),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text(
-                              'Xóa',
-                              style: TextStyle(color: Colors.red),
-                            ),
+                          child: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                            size: 32,
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                  onDismissed: (direction) {
-                    _deleteNotification(item);
-                  },
-                  child: _buildNotificationItem(item),
-                );
-              },
-            ),
+                        ),
+                        confirmDismiss: (direction) async {
+                          return await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              backgroundColor: const Color(0xFF1F222A),
+                              title: const Text(
+                                'Xóa thông báo?',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              content: const Text(
+                                'Bạn có chắc muốn xóa thông báo này?',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: const Text(
+                                    'Hủy',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text(
+                                    'Xóa',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        onDismissed: (direction) {
+                          _deleteNotification(item);
+                        },
+                        child: _buildNotificationItem(item),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

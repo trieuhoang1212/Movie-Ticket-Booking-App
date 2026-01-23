@@ -19,7 +19,6 @@ class FavoriteScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        automaticallyImplyLeading: false,
         title: const Text(
           "Danh sách yêu thích",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
@@ -46,7 +45,10 @@ class FavoriteScreen extends StatelessWidget {
         children: [
           // 1. ẢNH NỀN (Background Image)
           Positioned.fill(
-            child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/images/BG.png',
+              fit: BoxFit.cover,
+            ),
           ),
 
           // 2. LỚP PHỦ MÀU ĐEN MỜ (Overlay)
@@ -163,11 +165,7 @@ class FavoriteScreen extends StatelessWidget {
                   // Rating
                   Row(
                     children: [
-                      const Icon(
-                        Icons.star,
-                        color: Color(0xFFFF4444),
-                        size: 16,
-                      ),
+                      const Icon(Icons.star, color: Color(0xFFFF4444), size: 16),
                       const SizedBox(width: 4),
                       Text(
                         movie["rating"] ?? "",
@@ -178,7 +176,7 @@ class FavoriteScreen extends StatelessWidget {
                         ),
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
@@ -189,11 +187,7 @@ class FavoriteScreen extends StatelessWidget {
               children: [
                 Container(
                   margin: const EdgeInsets.only(bottom: 50),
-                  child: const Icon(
-                    Icons.favorite,
-                    color: Color(0xFFFF4444),
-                    size: 24,
-                  ),
+                  child: const Icon(Icons.favorite, color: Color(0xFFFF4444), size: 24),
                 ),
               ],
             ),
