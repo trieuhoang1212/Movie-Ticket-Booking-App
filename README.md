@@ -168,7 +168,7 @@ Thay vì phải đến rạp xếp hàng chờ đợi, người dùng có thể:
 | **Local Storage**     | Shared Preferences, Hive                                         |
 | **Authentication**    | Firebase Authentication                                          |
 | **Push Notification** | Firebase Cloud Messaging (FCM)                                   |
-| **VNPAY**             | vnpay Node.js|
+| **VNPAY**             | vnpay Node.js                                                    |
 | **HTTP Client**       | Dio                                                              |
 | **Navigation**        | go_router / AutoRoute                                            |
 
@@ -671,12 +671,11 @@ Permission is hereby granted, free of charge, to any person obtaining a copy...
 
 ## 👥 Team Members
 
-| Vai trò               | Thành viên  | GitHub                                               |
-| --------------------- | ----------- | ---------------------------------------------------- |
-| **Project Lead**      | Triệu Hoàng | [@trieuhoang1212](https://github.com/trieuhoang1212) |
-| **Backend Developer** | [Tên]       | [@username]                                          |
-| **Mobile Developer**  | [Tên]       | [@username]                                          |
-| **UI/UX Designer**    | [Tên]       | [@username]                                          |
+| Vai trò                            | Thành viên         | GitHub                                                          |
+| ---------------------------------- | ------------------ | --------------------------------------------------------------- |
+| **Backend Developer/Project Lead** | Hoàng Triều        | https://github.com/trieuhoang1212                               |
+| **Fontend Developer**              | Nguyễn Mạnh Hiền   | https://github.com/Hien-LL                                      |
+| **Doc,Slide,Figma**                    | Trần Nhật Hào & Trần Nguyên Vĩ | https://github.com/nhathao-15 & https://github.com/nguyenvy2103 |
 
 ---
 
