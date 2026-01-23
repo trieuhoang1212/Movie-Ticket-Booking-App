@@ -6,11 +6,11 @@ const registerSchema = Joi.object({
     "string.email": "email is not valid",
     "any.required": "email is required",
   }),
-  name: Joi.string().email().required().messages({
+  name: Joi.string().required().messages({
     "any.required": "name is required",
   }),
-  password: Joi.string().email().required().messages({
-    "string.email": "Password must be at least 6 characters long",
+  password: Joi.string().min(6).required().messages({
+    "string.min": "Password must be at least 6 characters long",
     "any.required": "password is required",
   }),
 });
@@ -21,7 +21,7 @@ const loginSchema = Joi.object({
     "string.email": "email is not valid",
     "any.required": "email is required",
   }),
-  password: Joi.string().email().required().messages({
+  password: Joi.string().required().messages({
     "any.required": "password is required",
   }),
 });

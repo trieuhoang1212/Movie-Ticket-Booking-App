@@ -32,20 +32,39 @@ const middlewares = {
       "/api/booking/movies",
       "/api/booking/showtimes",
       "/api/user/health",
+      "/health",
     ];
 
-    const isPublicEndpoint = publicEndpoints.some((endpoint) =>
-      req.url.startsWith(endpoint)
-    );
+    // Patterns to match with startsWith (allow all sub-paths)
+    const publicPrefixes = [
+      "/api/booking", // Allow all booking operations (for development)
+      "/api/bookings", // Alias for booking service
+      "/api/payment", // Allow all payment operations (for development)
+      "/api/auth", // Allow all auth operations including fcm-token
+    ];
+
+    const isPublicEndpoint =
+      publicEndpoints.some((endpoint) =>
+        req.originalUrl.startsWith(endpoint)
+      ) || publicPrefixes.some((prefix) => req.originalUrl.startsWith(prefix));
 
     if (isPublicEndpoint) {
+      console.log(`✅ Public endpoint, skipping authentication`);
+      next();
     } else {
-      const authenData = await authenticationService.authenticate(req, next);
-      // set user information that  authenticated
-      console.log(`Authenticating...`, authenData);
-      req.headers["__user_info"] = JSON.stringify(authenData);
+      try {
+        // Gọi service không truyền next nữa
+        const authenData = await authenticationService.authenticate(req);
+        // set user information that authenticated
+        console.log(`Authenticating...`, authenData);
+        req.headers["__user_info"] = JSON.stringify(authenData);
+        next();
+      } catch (error) {
+        // Bắt lỗi tại đây và DỪNG LẠI (return)
+        next(error);
+        return;
+      }
     }
-    next();
   },
   logger: function (req: Request, res: Response, next) {
     // Logging request, user, body, request...
@@ -98,6 +117,10 @@ const middlewares = {
     console.log("-- Going to handle exception --");
     console.log(err);
 
+    if (res.headersSent) {
+      return next(err);
+    }
+
     if (err instanceof AuthenticationError) {
       res.status(401).json(err);
     } else {
@@ -108,7 +131,7 @@ const middlewares = {
       };
       res.status(500).json(errorBody);
     }
-    next();
+    // KHÔNG gọi next() ở đây nữa vì đã gửi response rồi
   },
 };
 
@@ -158,6 +181,25 @@ for (let [key, value] of ContextPathMap.entries()) {
     })
   );
 }
+
+app.use(
+  "/api/bookings",
+  proxy(`${ContextPathMap.get("booking")}`, {
+    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
+      console.log(userReq.originalUrl);
+      if (applyingCacheUrls.includes(userReq.originalUrl.split("?")[0])) {
+        const cacheValue = JSON.parse(proxyResData.toString("utf8"));
+        console.log("cacheValue ", userReq.originalUrl, proxyResData);
+        cacheService.addRouteCache(
+          userReq.originalUrl,
+          userReq.method,
+          cacheValue
+        );
+      }
+      return proxyResData;
+    },
+  })
+);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
