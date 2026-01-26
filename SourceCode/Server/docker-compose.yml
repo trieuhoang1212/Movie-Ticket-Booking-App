@@ -1,5 +1,5 @@
 services:
-  # MongoDB Database
+  # ===================== MongoDB =====================
   mongodb:
     image: mongo:7.0
     container_name: movie-booking-mongodb
@@ -16,7 +16,7 @@ services:
     networks:
       - movie-booking-network
 
-  # Auth Service
+  # ===================== AUTH SERVICE =====================
   auth-service:
     build:
       context: ./services/auth-service/srs
@@ -39,20 +39,8 @@ services:
       - mongodb
     networks:
       - movie-booking-network
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "require('http').get('http://localhost:3001/health')",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # Booking Service
+  # ===================== BOOKING SERVICE =====================
   booking-service:
     build:
       context: ./services/booking-service/srs
@@ -78,20 +66,8 @@ services:
       - notification-service
     networks:
       - movie-booking-network
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "require('http').get('http://localhost:3002/health')",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # User Service
+  # ===================== USER SERVICE =====================
   user-service:
     build:
       context: ./services/user-service/srs
@@ -109,20 +85,8 @@ services:
       - mongodb
     networks:
       - movie-booking-network
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "require('http').get('http://localhost:3003/health')",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # Payment Service
+  # ===================== PAYMENT SERVICE =====================
   payment-service:
     build:
       context: ./services/payment-service/srs
@@ -138,7 +102,7 @@ services:
       - VNP_TMN_CODE=DEMOV210
       - VNP_HASH_SECRET=RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ
       - VNP_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-      - VNP_RETURN_URL=http://10.0.2.2:3000/api/payment/vnpay-return
+      - VNP_RETURN_URL=http://api-gateway:3004/api/payment/vnpay-return
       - VNP_IPN_URL=http://payment-service:3004/api/payment/vnpay-ipn
       - NOTIFICATION_SERVICE_URL=http://notification-service:3005
       - BOOKING_SERVICE_URL=http://booking-service:3002
@@ -148,20 +112,8 @@ services:
       - notification-service
     networks:
       - movie-booking-network
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "require('http').get('http://localhost:3004/health')",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # Notification Service
+  # ===================== NOTIFICATION SERVICE =====================
   notification-service:
     build:
       context: ./services/notification-service/srs
@@ -185,20 +137,8 @@ services:
       - mongodb
     networks:
       - movie-booking-network
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "require('http').get('http://localhost:3005/health')",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # API Gateway
+  # ===================== API GATEWAY =====================
   api-gateway:
     build:
       context: ./api-gateway
@@ -210,6 +150,7 @@ services:
     environment:
       - PORT=3000
       - NODE_ENV=production
+      - DOCKER_ENV=true
     depends_on:
       - auth-service
       - booking-service
