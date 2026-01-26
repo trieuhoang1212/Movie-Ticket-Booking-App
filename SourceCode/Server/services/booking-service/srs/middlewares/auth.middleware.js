@@ -18,7 +18,7 @@ const authenticateToken = async (req, res, next) => {
     }
 
     // DEVELOPMENT MODE: Sử dụng ObjectId hợp lệ cho test user
-    console.log("⚠️  Development mode: Using test user with valid ObjectId");
+    console.log("Development mode: Using test user with valid ObjectId");
 
     // Tạo một ObjectId cố định cho dev user (luôn giống nhau mỗi lần)
     const devUserId = "507f1f77bcf86cd799439011"; // Valid MongoDB ObjectId

@@ -84,9 +84,6 @@ router.get(
   bookingController.getSeatsByShowtime
 );
 
-// ==========================================
-// 2. PRIVATE ROUTES (Specific routes first)
-// ==========================================
 
 /**
  * @swagger

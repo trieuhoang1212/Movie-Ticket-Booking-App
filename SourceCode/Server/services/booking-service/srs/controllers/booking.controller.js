@@ -8,12 +8,12 @@ const fcmService = require("../services/fcm.service");
 // Tạo booking mới
 exports.createBooking = async (req, res) => {
   try {
-    console.log("📝 Creating booking:", { body: req.body, user: req.user });
+    console.log("Creating booking:", { body: req.body, user: req.user });
 
     const { showtimeId, seatIds } = req.body;
     const userId = req.user.id; // Từ JWT middleware
 
-    console.log("🔍 Finding showtime:", showtimeId);
+    console.log("Finding showtime:", showtimeId);
     // Kiểm tra showtime
     const showtime = await Showtime.findById(showtimeId).populate("movieId");
     console.log(
@@ -28,16 +28,16 @@ exports.createBooking = async (req, res) => {
     }
 
     // Kiểm tra ghế có available không
-    console.log("🔍 Finding seats:", { showtimeId, seatIds });
+    console.log("Finding seats:", { showtimeId, seatIds });
     const seats = await Seat.find({
       _id: { $in: seatIds },
       showtimeId: showtimeId,
       status: "available",
     });
-    console.log(`✅ Found ${seats.length}/${seatIds.length} available seats`);
+    console.log(`Found ${seats.length}/${seatIds.length} available seats`);
 
     if (seats.length !== seatIds.length) {
-      console.log("❌ Some seats not available");
+      console.log("Some seats not available");
       return res.status(400).json({
         success: false,
         message: "Some seats are not available",
@@ -45,7 +45,7 @@ exports.createBooking = async (req, res) => {
     }
 
     // Tính tổng tiền
-    console.log("💰 Calculating total...");
+    console.log("Calculating total...");
     let totalAmount = 0;
     const bookingSeats = seats.map((seat) => {
       const price = showtime.price[seat.type];
@@ -65,7 +65,7 @@ exports.createBooking = async (req, res) => {
       .padStart(3, "0")}`;
 
     // Tạo booking
-    console.log("💾 Saving booking:", {
+    console.log("Saving booking:", {
       userId,
       showtimeId,
       totalAmount,
@@ -73,12 +73,11 @@ exports.createBooking = async (req, res) => {
       bookingCode,
     });
     console.log(
-      "🪑 Booking seats type:",
+      "Booking seats type:",
       typeof bookingSeats,
       Array.isArray(bookingSeats)
     );
-    console.log("🪑 Booking seats:", JSON.stringify(bookingSeats, null, 2));
-
+    console.log("Booking seats:", JSON.stringify(bookingSeats, null, 2));
     const booking = new Booking({
       userId,
       showtimeId,
@@ -90,10 +89,10 @@ exports.createBooking = async (req, res) => {
     });
 
     await booking.save();
-    console.log("✅ Booking saved:", booking._id);
+    console.log("Booking saved:", booking._id);
 
     // Cập nhật trạng thái ghế
-    console.log("🔄 Updating seat status...");
+    console.log("Updating seat status...");
     await Seat.updateMany(
       { _id: { $in: seatIds } },
       {
@@ -102,18 +101,18 @@ exports.createBooking = async (req, res) => {
         reservedUntil: new Date(Date.now() + 10 * 60 * 1000),
       }
     );
-    console.log("✅ Seats updated");
+    console.log("Seats updated");
 
     // Populate booking để lấy thông tin đầy đủ
-    console.log("🔄 Populating booking...");
+    console.log("Populating booking...");
     const populatedBooking = await booking.populate({
       path: "showtimeId",
       populate: { path: "movieId" },
     });
-    console.log("✅ Booking populated");
+    console.log("Booking populated");
 
     // Gửi thông báo đặt vé thành công (async, không chờ để không làm chậm response)
-    console.log("📤 Sending notification...");
+    console.log("Sending notification...");
     notifyBookingConfirmed({
       userId,
       _id: booking._id,
@@ -124,9 +123,9 @@ exports.createBooking = async (req, res) => {
       cinema: populatedBooking.showtimeId?.cinemaHall || "Cinema",
       totalAmount,
     }).catch((err) =>
-      console.error("⚠️ Failed to send booking notification:", err.message)
+      console.error("Failed to send booking notification:", err.message)
     );
-    console.log("✅ Notification sent (async)");
+    console.log("Notification sent (async)");
 
     res.status(201).json({
       success: true,
@@ -136,7 +135,7 @@ exports.createBooking = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("❌ Error creating booking:", error);
+    console.error("Error creating booking:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -284,7 +283,7 @@ exports.cancelBooking = async (req, res) => {
     try {
       await fcmService.sendNotificationToUser(
         userId,
-        "❌ Vé đã bị hủy",
+        "Vé đã bị hủy",
         `Vé "${movieTitle}" (${bookingCode}) đã bị hủy thành công.`,
         {
           type: "BOOKING_CANCELLED",
@@ -292,9 +291,9 @@ exports.cancelBooking = async (req, res) => {
           movieTitle,
         }
       );
-      console.log("✅ Cancel notification sent");
+      console.log("Cancel notification sent");
     } catch (notifError) {
-      console.error("⚠️ Failed to send notification:", notifError.message);
+      console.error("Failed to send notification:", notifError.message);
     }
 
     res.status(200).json({
@@ -353,9 +352,9 @@ exports.deleteBooking = async (req, res) => {
         bookingCode,
         showtimeDate,
       });
-      console.log("✅ Delete notification sent");
+      console.log("Delete notification sent");
     } catch (notifError) {
-      console.error("⚠️ Failed to send notification:", notifError.message);
+      console.error("Failed to send notification:", notifError.message);
       // Không block response nếu notification fail
     }
 
