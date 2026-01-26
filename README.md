@@ -109,49 +109,270 @@ Thay vì phải đến rạp xếp hàng chờ đợi, người dùng có thể:
 
 ## 🏗️ Kiến trúc hệ thống
 
+### 📐 Tổng quan Kiến trúc
+
+Hệ thống áp dụng **Clean Architecture** kết hợp **Microservices**, đảm bảo tính tách biệt, dễ bảo trì và mở rộng:
+
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Mobile App (Flutter)                     │
-│          iOS / Android / Web / Desktop (macOS)             │
-└─────────────────────┬───────────────────────────────────────┘
-                      │ HTTPS/REST API
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   API Gateway (TypeScript)                  │
-│    ✓ Routing  ✓ Auth Middleware  ✓ Caching  ✓ Logging     │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-        ┌─────────────┼─────────────┬─────────────┬───────────┐
-        ▼             ▼             ▼             ▼           ▼
-    ┌────────┐  ┌──────────┐  ┌─────────┐  ┌─────────┐  ┌────────┐
-    │  Auth  │  │ Booking  │  │  User   │  │ Payment │  │ Notify │
-    │Service │  │ Service  │  │ Service │  │ Service │  │Service │
-    └───┬────┘  └────┬─────┘  └────┬────┘  └────┬────┘  └───┬────┘
-        │            │              │            │            │
-        └────────────┴──────────────┴────────────┴────────────┘
-                                    ▼
-                    ┌───────────────────────────────┐
-                    │     MongoDB 8.2.2 Cluster     │
-                    │  ✓ Users  ✓ Movies  ✓ Tickets │
-                    └───────────────────────────────┘
-                                    │
-                        ┌───────────┴───────────┐
-                        ▼                       ▼
-                ┌───────────────┐       ┌──────────────┐
-                │Firebase Auth  │       │    VNPay     │
-                │  & FCM Push   │       │   Payment    │
-                └───────────────┘       └──────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                      Mobile App (Flutter)                           │
+│                 iOS / Android / Web / Desktop                       │
+│                                                                     │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │                   PRESENTATION LAYER                          │ │
+│  │  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │ │
+│  │  │ Pages/  │  │ Providers│  │ Widgets/ │  │ Layout/  │      │ │
+│  │  │ Screens │  │ (Bloc)   │  │ Reusable │  │ Scaffold │      │ │
+│  │  └─────────┘  └──────────┘  └──────────┘  └──────────┘      │ │
+│  └─────────────────────────┬─────────────────────────────────────┘ │
+│                            │ Events/States                         │
+│  ┌─────────────────────────▼─────────────────────────────────────┐ │
+│  │                     DOMAIN LAYER                              │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │ │
+│  │  │  Entities/   │  │  Use Cases/  │  │ Repositories │       │ │
+│  │  │ Business Obj │  │ Business Log │  │  (Abstract)  │       │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘       │ │
+│  └─────────────────────────┬─────────────────────────────────────┘ │
+│                            │ Repository Interfaces                 │
+│  ┌─────────────────────────▼─────────────────────────────────────┐ │
+│  │                      DATA LAYER                               │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │ │
+│  │  │ Models/      │  │ Repositories │  │ Data Sources │       │ │
+│  │  │ DTOs         │  │ Impl         │  │ Remote/Local │       │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘       │ │
+│  └─────────────────────────┬─────────────────────────────────────┘ │
+│                            │ HTTP/API Calls                        │
+│  ┌─────────────────────────▼─────────────────────────────────────┐ │
+│  │                      CORE LAYER                               │ │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │ │
+│  │  │ DI/      │  │ Constants│  │ Themes/  │  │ Utils/   │     │ │
+│  │  │ GetIt    │  │ Config   │  │ Styles   │  │ Helpers  │     │ │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+└──────────────────────────┬──────────────────────────────────────────┘
+                           │ HTTPS/REST API
+                           ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                   API Gateway (TypeScript)                          │
+│  ✓ Routing  ✓ Auth Middleware  ✓ Rate Limiting  ✓ Caching         │
+└──────────────────────────┬──────────────────────────────────────────┘
+                           │
+         ┌─────────────────┼─────────────────┬─────────────┬──────────┐
+         ▼                 ▼                 ▼             ▼          ▼
+    ┌─────────┐      ┌──────────┐     ┌──────────┐  ┌─────────┐  ┌────────┐
+    │  Auth   │      │ Booking  │     │   User   │  │ Payment │  │ Notify │
+    │ Service │      │ Service  │     │ Service  │  │ Service │  │Service │
+    │Port 3001│      │Port 3002 │     │Port 3003 │  │Port 3004│  │Port3005│
+    └────┬────┘      └─────┬────┘     └─────┬────┘  └────┬────┘  └───┬────┘
+         │                 │                 │            │            │
+         └─────────────────┴─────────────────┴────────────┴────────────┘
+                                     ▼
+                 ┌────────────────────────────────────┐
+                 │      MongoDB 8.2.2 Cluster         │
+                 │ Collections:                       │
+                 │  • users        • movies           │
+                 │  • bookings     • showtimes        │
+                 │  • theaters     • combos           │
+                 │  • transactions • notifications    │
+                 └──────────────┬─────────────────────┘
+                                │
+                    ┌───────────┴────────────┐
+                    ▼                        ▼
+         ┌──────────────────┐     ┌──────────────────┐
+         │  Firebase Suite  │     │  VNPay Gateway   │
+         │  • Authentication│     │  • Payment API   │
+         │  • FCM Push      │     │  • Transaction   │
+         │  • Firestore     │     │  • Refund        │
+         │  • Storage       │     │  • IPN Callback  │
+         └──────────────────┘     └──────────────────┘
 ```
 
-### 📦 Cấu trúc Microservices
+### 🎯 Clean Architecture - Mobile App (Flutter)
 
-| Service                  | Chức năng                                 | Tech Stack                      |
-| ------------------------ | ----------------------------------------- | ------------------------------- |
-| **Auth Service**         | Đăng ký, đăng nhập, JWT, Firebase Auth    | Node.js, Express, JWT, bcryptjs |
-| **Booking Service**      | Quản lý phim, suất chiếu, đặt vé, QR Code | Node.js, Express, QRCode        |
-| **User Service**         | Quản lý profile, lịch sử, preferences     | Node.js, Express, Mongoose      |
-| **Payment Service**      | VNPay integration, giao dịch, hoàn tiền   | Node.js, Express, VNPay SDK     |
-| **Notification Service** | Email, Push notification, nhắc nhở        | Node.js, Nodemailer, FCM        |
+```
+SourceCode/Client/lib/
+├── 📁 core/                          # Core utilities, DI, themes
+│   ├── 📁 constants/                 # App constants, API endpoints
+│   ├── 📁 di/                        # Dependency Injection (GetIt)
+│   ├── 📁 theme/                     # App theme, colors, text styles
+│   ├── 📁 utils/                     # Helper functions, validators
+│   ├── 📁 errors/                    # Custom exceptions, failures
+│   └── 📁 network/                   # HTTP client setup (Dio)
+│
+├── 📁 data/                          # Data layer (repositories, models, datasources)
+│   ├── 📁 models/                    # Data models (DTOs)
+│   │   ├── 📄 user_model.dart
+│   │   ├── 📄 movie_model.dart
+│   │   ├── 📄 booking_model.dart
+│   │   └── 📄 payment_model.dart
+│   ├── 📁 repositories/              # Repository implementations
+│   │   ├── 📄 auth_repository_impl.dart
+│   │   ├── 📄 movie_repository_impl.dart
+│   │   └── 📄 booking_repository_impl.dart
+│   └── 📁 datasources/               # Data sources (Remote/Local)
+│       ├── 📁 remote/
+│       │   ├── 📄 auth_remote_datasource.dart
+│       │   ├── 📄 movie_remote_datasource.dart
+│       │   └── 📄 booking_remote_datasource.dart
+│       └── 📁 local/
+│           ├── 📄 auth_local_datasource.dart  # Shared Preferences, Hive
+│           └── 📄 cache_manager.dart
+│
+├── 📁 domain/                        # Domain layer (entities, use cases)
+│   ├── 📁 entities/                  # Business objects
+│   │   ├── 📄 user.dart
+│   │   ├── 📄 movie.dart
+│   │   ├── 📄 booking.dart
+│   │   ├── 📄 seat.dart
+│   │   └── 📄 showtime.dart
+│   ├── 📁 repositories/              # Repository interfaces (abstract)
+│   │   ├── 📄 auth_repository.dart
+│   │   ├── 📄 movie_repository.dart
+│   │   └── 📄 booking_repository.dart
+│   └── 📁 usecases/                  # Business logic (use cases)
+│       ├── 📄 login_usecase.dart
+│       ├── 📄 get_movies_usecase.dart
+│       ├── 📄 book_ticket_usecase.dart
+│       └── 📄 process_payment_usecase.dart
+│
+├── 📁 presentation/                  # Presentation layer (UI, providers)
+│   ├── 📁 pages/                     # Screens
+│   │   ├── 📁 auth/
+│   │   │   ├── 📄 login_page.dart
+│   │   │   └── 📄 register_page.dart
+│   │   ├── 📁 home/
+│   │   │   ├── 📄 home_page.dart
+│   │   │   └── 📄 movie_detail_page.dart
+│   │   ├── 📁 booking/
+│   │   │   ├── 📄 showtime_selection_page.dart
+│   │   │   ├── 📄 seat_selection_page.dart
+│   │   │   └── 📄 combo_selection_page.dart
+│   │   ├── 📁 payment/
+│   │   │   ├── 📄 payment_page.dart
+│   │   │   └── 📄 payment_success_page.dart
+│   │   └── 📁 profile/
+│   │       ├── 📄 profile_page.dart
+│   │       └── 📄 booking_history_page.dart
+│   ├── 📁 providers/                 # State management (Bloc/Provider)
+│   │   ├── 📄 auth_bloc.dart
+│   │   ├── 📄 movie_bloc.dart
+│   │   ├── 📄 booking_bloc.dart
+│   │   └── 📄 payment_bloc.dart
+│   ├── 📁 widgets/                   # Reusable widgets
+│   │   ├── 📄 movie_card.dart
+│   │   ├── 📄 seat_widget.dart
+│   │   ├── 📄 custom_button.dart
+│   │   └── 📄 loading_indicator.dart
+│   └── 📁 layout/                    # Layout components
+│       ├── 📄 main_layout.dart
+│       └── 📄 bottom_navigation.dart
+│
+├── 📁 routes/                        # Navigation & routing
+│   ├── 📄 app_routes.dart
+│   └── 📄 route_generator.dart
+│
+└── 📄 main.dart                      # Entry point
+```
+
+### 🔄 Data Flow trong Clean Architecture
+
+```
+User Interaction (UI)
+        │
+        ▼
+┌───────────────────┐
+│ Presentation      │ ◄─── UI Events (Button clicks, form submit)
+│ (Pages/Widgets)   │
+└────────┬──────────┘
+         │ Dispatch Events
+         ▼
+┌───────────────────┐
+│ Bloc/Provider     │ ◄─── State Management
+│ (Business Logic)  │
+└────────┬──────────┘
+         │ Call Use Cases
+         ▼
+┌───────────────────┐
+│ Use Cases         │ ◄─── Business Rules
+│ (Domain Logic)    │
+└────────┬──────────┘
+         │ Repository Interface
+         ▼
+┌───────────────────┐
+│ Repository Impl   │ ◄─── Data Orchestration
+│ (Data Layer)      │
+└────────┬──────────┘
+         │ Fetch Data
+         ▼
+┌───────────────────┐
+│ Data Sources      │ ◄─── API Calls / Local Cache
+│ (Remote/Local)    │
+└────────┬──────────┘
+         │ HTTP Request
+         ▼
+┌───────────────────┐
+│ API Gateway       │ ◄─── Backend Services
+│ (REST API)        │
+└───────────────────┘
+```
+
+### 📦 Cấu trúc Microservices Backend
+
+| Service                  | Port | Chức năng                                         | Tech Stack                      |
+| ------------------------ | ---- | ------------------------------------------------- | ------------------------------- |
+| **API Gateway**          | 3000 | Routing, Auth Middleware, Rate Limiting, Caching  | TypeScript, Express, node-cache |
+| **Auth Service**         | 3001 | Đăng ký, đăng nhập, JWT, Firebase Auth, 2FA       | Node.js, Express, JWT, bcryptjs |
+| **Booking Service**      | 3002 | Quản lý phim, suất chiếu, đặt vé, QR Code, rạp    | Node.js, Express, QRCode        |
+| **User Service**         | 3003 | Quản lý profile, lịch sử, preferences, watchlist  | Node.js, Express, Mongoose      |
+| **Payment Service**      | 3004 | VNPay integration, giao dịch, hoàn tiền, hóa đơn  | Node.js, Express, VNPay SDK     |
+| **Notification Service** | 3005 | Email (Nodemailer), Push notification (FCM), nhắc | Node.js, Nodemailer, FCM        |
+
+### 🗄️ Database Collections
+
+```
+MongoDB Database: cinema_booking
+├── users
+│   ├── _id, email, password_hash, displayName
+│   ├── phone, avatar, role (user/admin)
+│   ├── firebase_uid, google_id, facebook_id
+│   └── created_at, updated_at
+│
+├── movies
+│   ├── _id, title, description, poster_url
+│   ├── trailer_url, duration, rating, genres
+│   ├── release_date, language, age_rating
+│   └── cast, director, status (showing/upcoming)
+│
+├── theaters
+│   ├── _id, name, location, city
+│   └── screens[] { screen_number, seats[], type }
+│
+├── showtimes
+│   ├── _id, movie_id, theater_id, screen_id
+│   ├── date, time, price, available_seats
+│   └── status (active/cancelled)
+│
+├── bookings
+│   ├── _id, user_id, showtime_id, seats[]
+│   ├── combo_items[], total_price, qr_code
+│   ├── status (pending/confirmed/cancelled)
+│   └── created_at, booking_date
+│
+├── transactions
+│   ├── _id, booking_id, user_id, amount
+│   ├── payment_method, vnpay_transaction_id
+│   ├── status (pending/success/failed/refunded)
+│   └── transaction_date
+│
+├── combos
+│   ├── _id, name, items[], price, image_url
+│   └── status (active/inactive)
+│
+└── notifications
+    ├── _id, user_id, title, message, type
+    ├── is_read, sent_at
+    └── metadata (booking_id, movie_id)
+```
 
 ---
 
@@ -671,11 +892,11 @@ Permission is hereby granted, free of charge, to any person obtaining a copy...
 
 ## 👥 Team Members
 
-| Vai trò                            | Thành viên         | GitHub                                                          |
-| ---------------------------------- | ------------------ | --------------------------------------------------------------- |
-| **Backend Developer/Project Lead** | Hoàng Triều        | https://github.com/trieuhoang1212                               |
-| **Fontend Developer**              | Nguyễn Mạnh Hiền   | https://github.com/Hien-LL                                      |
-| **Doc,Slide,Figma**                    | Trần Nhật Hào & Trần Nguyên Vĩ | https://github.com/nhathao-15 & https://github.com/nguyenvy2103 |
+| Vai trò                            | Thành viên                     | GitHub                                                          |
+| ---------------------------------- | ------------------------------ | --------------------------------------------------------------- |
+| **Backend Developer/Project Lead** | Hoàng Triều                    | https://github.com/trieuhoang1212                               |
+| **Fontend Developer**              | Nguyễn Mạnh Hiền               | https://github.com/Hien-LL                                      |
+| **Doc,Slide,Figma**                | Trần Nhật Hào & Trần Nguyên Vĩ | https://github.com/nhathao-15 & https://github.com/nguyenvy2103 |
 
 ---
 
