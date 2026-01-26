@@ -111,80 +111,83 @@ Thay vì phải đến rạp xếp hàng chờ đợi, người dùng có thể:
 
 ### 📐 Tổng quan Kiến trúc
 
-Hệ thống áp dụng **Clean Architecture** kết hợp **Microservices**, đảm bảo tính tách biệt, dễ bảo trì và mở rộng:
+> **⚠️ Trạng thái hiện tại:** Mobile App (Flutter) đã được phát triển với **Clean Architecture**. Backend Microservices đang trong giai đoạn lên kế hoạch.
+
+Hệ thống được thiết kế với kiến trúc **Clean Architecture** cho Flutter app, chuẩn bị tích hợp **Microservices Backend** trong tương lai:
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                      Mobile App (Flutter)                           │
-│                 iOS / Android / Web / Desktop                       │
-│                                                                     │
-│  ┌───────────────────────────────────────────────────────────────┐ │
-│  │                   PRESENTATION LAYER                          │ │
-│  │  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │ │
-│  │  │ Pages/  │  │ Providers│  │ Widgets/ │  │ Layout/  │      │ │
-│  │  │ Screens │  │ (Bloc)   │  │ Reusable │  │ Scaffold │      │ │
-│  │  └─────────┘  └──────────┘  └──────────┘  └──────────┘      │ │
-│  └─────────────────────────┬─────────────────────────────────────┘ │
-│                            │ Events/States                         │
-│  ┌─────────────────────────▼─────────────────────────────────────┐ │
-│  │                     DOMAIN LAYER                              │ │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │ │
-│  │  │  Entities/   │  │  Use Cases/  │  │ Repositories │       │ │
-│  │  │ Business Obj │  │ Business Log │  │  (Abstract)  │       │ │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘       │ │
-│  └─────────────────────────┬─────────────────────────────────────┘ │
-│                            │ Repository Interfaces                 │
-│  ┌─────────────────────────▼─────────────────────────────────────┐ │
-│  │                      DATA LAYER                               │ │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │ │
-│  │  │ Models/      │  │ Repositories │  │ Data Sources │       │ │
-│  │  │ DTOs         │  │ Impl         │  │ Remote/Local │       │ │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘       │ │
-│  └─────────────────────────┬─────────────────────────────────────┘ │
-│                            │ HTTP/API Calls                        │
-│  ┌─────────────────────────▼─────────────────────────────────────┐ │
-│  │                      CORE LAYER                               │ │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │ │
-│  │  │ DI/      │  │ Constants│  │ Themes/  │  │ Utils/   │     │ │
-│  │  │ GetIt    │  │ Config   │  │ Styles   │  │ Helpers  │     │ │
-│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │ │
-│  └───────────────────────────────────────────────────────────────┘ │
-└──────────────────────────┬──────────────────────────────────────────┘
-                           │ HTTPS/REST API
+┌──────────────────────────────────────────────────────────────────────┐
+│                  ✅ Mobile App (Flutter) - IMPLEMENTED               │
+│                   iOS / Android / Web / Desktop                      │
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │                   PRESENTATION LAYER                           │ │
+│  │  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │ │
+│  │  │ Pages/  │  │ Providers│  │ Widgets/ │  │ Layout/  │       │ │
+│  │  │ Screens │  │ (Bloc)   │  │ Reusable │  │ Scaffold │       │ │
+│  │  └─────────┘  └──────────┘  └──────────┘  └──────────┘       │ │
+│  └─────────────────────────┬──────────────────────────────────────┘ │
+│                            │ Events/States                          │
+│  ┌─────────────────────────▼──────────────────────────────────────┐ │
+│  │                     DOMAIN LAYER                               │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │ │
+│  │  │  Entities/   │  │  Use Cases/  │  │ Repositories │        │ │
+│  │  │ Business Obj │  │ Business Log │  │  (Abstract)  │        │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘        │ │
+│  └─────────────────────────┬──────────────────────────────────────┘ │
+│                            │ Repository Interfaces                  │
+│  ┌─────────────────────────▼──────────────────────────────────────┐ │
+│  │                      DATA LAYER                                │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │ │
+│  │  │ Models/      │  │ Repositories │  │ Data Sources │        │ │
+│  │  │ DTOs         │  │ Impl         │  │ Remote/Local │        │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘        │ │
+│  └─────────────────────────┬──────────────────────────────────────┘ │
+│                            │ HTTP/API Calls (Ready for Backend)    │
+│  ┌─────────────────────────▼──────────────────────────────────────┐ │
+│  │                      CORE LAYER                                │ │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │ │
+│  │  │ DI/      │  │ Constants│  │ Themes/  │  │ Utils/   │      │ │
+│  │  │ GetIt    │  │ Config   │  │ Styles   │  │ Helpers  │      │ │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘      │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────┬───────────────────────────────────────────┘
+                           │ HTTPS/REST API (Sẵn sàng tích hợp)
                            ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                   API Gateway (TypeScript)                          │
-│  ✓ Routing  ✓ Auth Middleware  ✓ Rate Limiting  ✓ Caching         │
-└──────────────────────────┬──────────────────────────────────────────┘
-                           │
-         ┌─────────────────┼─────────────────┬─────────────┬──────────┐
-         ▼                 ▼                 ▼             ▼          ▼
-    ┌─────────┐      ┌──────────┐     ┌──────────┐  ┌─────────┐  ┌────────┐
-    │  Auth   │      │ Booking  │     │   User   │  │ Payment │  │ Notify │
-    │ Service │      │ Service  │     │ Service  │  │ Service │  │Service │
-    │Port 3001│      │Port 3002 │     │Port 3003 │  │Port 3004│  │Port3005│
-    └────┬────┘      └─────┬────┘     └─────┬────┘  └────┬────┘  └───┬────┘
-         │                 │                 │            │            │
-         └─────────────────┴─────────────────┴────────────┴────────────┘
-                                     ▼
-                 ┌────────────────────────────────────┐
-                 │      MongoDB 8.2.2 Cluster         │
-                 │ Collections:                       │
-                 │  • users        • movies           │
-                 │  • bookings     • showtimes        │
-                 │  • theaters     • combos           │
-                 │  • transactions • notifications    │
-                 └──────────────┬─────────────────────┘
-                                │
-                    ┌───────────┴────────────┐
-                    ▼                        ▼
-         ┌──────────────────┐     ┌──────────────────┐
-         │  Firebase Suite  │     │  VNPay Gateway   │
-         │  • Authentication│     │  • Payment API   │
-         │  • FCM Push      │     │  • Transaction   │
-         │  • Firestore     │     │  • Refund        │
-         │  • Storage       │     │  • IPN Callback  │
-         └──────────────────┘     └──────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│           🔨 Backend Microservices - PLANNED (In Development)        │
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │             API Gateway (TypeScript)                           │ │
+│  │   ✓ Routing  ✓ Auth Middleware  ✓ Rate Limiting  ✓ Caching    │ │
+│  └──────────────────────────┬─────────────────────────────────────┘ │
+│                             │                                        │
+│      ┌──────────────────────┼────────────────┬────────┬───────────┐ │
+│      ▼                      ▼                ▼        ▼           ▼ │
+│  ┌────────┐  ┌──────────┐  ┌──────────┐  ┌────────┐  ┌────────┐  │
+│  │  Auth  │  │ Booking  │  │   User   │  │Payment │  │ Notify │  │
+│  │Service │  │ Service  │  │ Service  │  │Service │  │Service │  │
+│  │Pt 3001 │  │ Pt 3002  │  │ Pt 3003  │  │Pt 3004 │  │Pt 3005 │  │
+│  └───┬────┘  └────┬─────┘  └────┬─────┘  └───┬────┘  └───┬────┘  │
+│      └────────────┴─────────────┴────────────┴────────────┘        │
+│                              ▼                                       │
+│           ┌──────────────────────────────────┐                      │
+│           │   MongoDB 8.2.2 Cluster          │                      │
+│           │  • users      • movies           │                      │
+│           │  • bookings   • showtimes        │                      │
+│           │  • theaters   • combos           │                      │
+│           │  • transactions • notifications  │                      │
+│           └─────────────┬────────────────────┘                      │
+│                         │                                            │
+│         ┌───────────────┴─────────────┐                             │
+│         ▼                             ▼                             │
+│  ┌────────────────┐        ┌──────────────────┐                    │
+│  │ Firebase Suite │        │  VNPay Gateway   │                    │
+│  │ • Auth • FCM   │        │  • Payment API   │                    │
+│  │ • Firestore    │        │  • Transaction   │                    │
+│  │ • Storage      │        │  • Refund        │                    │
+│  └────────────────┘        └──────────────────┘                    │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 🎯 Clean Architecture - Mobile App (Flutter)
@@ -316,18 +319,22 @@ User Interaction (UI)
 └───────────────────┘
 ```
 
-### 📦 Cấu trúc Microservices Backend
+### 📦 Cấu trúc Microservices Backend (🔨 Planned - Đang lên kế hoạch)
 
-| Service                  | Port | Chức năng                                         | Tech Stack                      |
-| ------------------------ | ---- | ------------------------------------------------- | ------------------------------- |
-| **API Gateway**          | 3000 | Routing, Auth Middleware, Rate Limiting, Caching  | TypeScript, Express, node-cache |
-| **Auth Service**         | 3001 | Đăng ký, đăng nhập, JWT, Firebase Auth, 2FA       | Node.js, Express, JWT, bcryptjs |
-| **Booking Service**      | 3002 | Quản lý phim, suất chiếu, đặt vé, QR Code, rạp    | Node.js, Express, QRCode        |
-| **User Service**         | 3003 | Quản lý profile, lịch sử, preferences, watchlist  | Node.js, Express, Mongoose      |
-| **Payment Service**      | 3004 | VNPay integration, giao dịch, hoàn tiền, hóa đơn  | Node.js, Express, VNPay SDK     |
-| **Notification Service** | 3005 | Email (Nodemailer), Push notification (FCM), nhắc | Node.js, Nodemailer, FCM        |
+> **Lưu ý:** Backend microservices đang trong giai đoạn thiết kế và phát triển. Mobile app đã sẵn sàng tích hợp khi backend hoàn thành.
 
-### 🗄️ Database Collections
+| Service                  | Port | Chức năng                                         | Tech Stack                      | Trạng thái |
+| ------------------------ | ---- | ------------------------------------------------- | ------------------------------- | ---------- |
+| **API Gateway**          | 3000 | Routing, Auth Middleware, Rate Limiting, Caching  | TypeScript, Express, node-cache | 🔨 Planned |
+| **Auth Service**         | 3001 | Đăng ký, đăng nhập, JWT, Firebase Auth, 2FA       | Node.js, Express, JWT, bcryptjs | 🔨 Planned |
+| **Booking Service**      | 3002 | Quản lý phim, suất chiếu, đặt vé, QR Code, rạp    | Node.js, Express, QRCode        | 🔨 Planned |
+| **User Service**         | 3003 | Quản lý profile, lịch sử, preferences, watchlist  | Node.js, Express, Mongoose      | 🔨 Planned |
+| **Payment Service**      | 3004 | VNPay integration, giao dịch, hoàn tiền, hóa đơn  | Node.js, Express, VNPay SDK     | 🔨 Planned |
+| **Notification Service** | 3005 | Email (Nodemailer), Push notification (FCM), nhắc | Node.js, Nodemailer, FCM        | 🔨 Planned |
+
+### 🗄️ Database Collections (🔨 Planned - Đang thiết kế)
+
+> **Lưu ý:** Database schema đang được thiết kế chi tiết để tích hợp với backend microservices.
 
 ```
 MongoDB Database: cinema_booking

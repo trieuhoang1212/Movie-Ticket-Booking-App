@@ -1,0 +1,263 @@
+CUTH (Cinema User Ticket Hub) là hệ thống đặt vé xem phim trực tuyến toàn diện, được xây dựng với mục đích hiện đại hóa trải nghiệm đặt vé của người dùng. Dự án áp dụng kiến trúc Microservices kết hợp Clean Architecture, đảm bảo tính mở rộng, bảo trì và hiệu suất cao.
+
+SourceCode/Client/lib/
+├── 📁 core/                          # Core utilities, DI, themes
+│   ├── 📁 constants/                 # App constants, API endpoints
+│   ├── 📁 di/                        # Dependency Injection (GetIt)
+│   ├── 📁 theme/                     # App theme, colors, text styles
+│   ├── 📁 utils/                     # Helper functions, validators
+│   ├── 📁 errors/                    # Custom exceptions, failures
+│   └── 📁 network/                   # HTTP client setup (Dio)
+│
+├── 📁 data/                          # Data layer (repositories, models, datasources)
+│   ├── 📁 models/                    # Data models (DTOs)
+│   │   ├── 📄 user_model.dart
+│   │   ├── 📄 movie_model.dart
+│   │   ├── 📄 booking_model.dart
+│   │   └── 📄 payment_model.dart
+│   ├── 📁 repositories/              # Repository implementations
+│   │   ├── 📄 auth_repository_impl.dart
+│   │   ├── 📄 movie_repository_impl.dart
+│   │   └── 📄 booking_repository_impl.dart
+│   └── 📁 datasources/               # Data sources (Remote/Local)
+│       ├── 📁 remote/
+│       │   ├── 📄 auth_remote_datasource.dart
+│       │   ├── 📄 movie_remote_datasource.dart
+│       │   └── 📄 booking_remote_datasource.dart
+│       └── 📁 local/
+│           ├── 📄 auth_local_datasource.dart  # Shared Preferences, Hive
+│           └── 📄 cache_manager.dart
+│
+├── 📁 domain/                        # Domain layer (entities, use cases)
+│   ├── 📁 entities/                  # Business objects
+│   │   ├── 📄 user.dart
+│   │   ├── 📄 movie.dart
+│   │   ├── 📄 booking.dart
+│   │   ├── 📄 seat.dart
+│   │   └── 📄 showtime.dart
+│   ├── 📁 repositories/              # Repository interfaces (abstract)
+│   │   ├── 📄 auth_repository.dart
+│   │   ├── 📄 movie_repository.dart
+│   │   └── 📄 booking_repository.dart
+│   └── 📁 usecases/                  # Business logic (use cases)
+│       ├── 📄 login_usecase.dart
+│       ├── 📄 get_movies_usecase.dart
+│       ├── 📄 book_ticket_usecase.dart
+│       └── 📄 process_payment_usecase.dart
+│
+├── 📁 presentation/                  # Presentation layer (UI, providers)
+│   ├── 📁 pages/                     # Screens
+│   │   ├── 📁 auth/
+│   │   │   ├── 📄 login_page.dart
+│   │   │   └── 📄 register_page.dart
+│   │   ├── 📁 home/
+│   │   │   ├── 📄 home_page.dart
+│   │   │   └── 📄 movie_detail_page.dart
+│   │   ├── 📁 booking/
+│   │   │   ├── 📄 showtime_selection_page.dart
+│   │   │   ├── 📄 seat_selection_page.dart
+│   │   │   └── 📄 combo_selection_page.dart
+│   │   ├── 📁 payment/
+│   │   │   ├── 📄 payment_page.dart
+│   │   │   └── 📄 payment_success_page.dart
+│   │   └── 📁 profile/
+│   │       ├── 📄 profile_page.dart
+│   │       └── 📄 booking_history_page.dart
+│   ├── 📁 providers/                 # State management (Bloc/Provider)
+│   │   ├── 📄 auth_bloc.dart
+│   │   ├── 📄 movie_bloc.dart
+│   │   ├── 📄 booking_bloc.dart
+│   │   └── 📄 payment_bloc.dart
+│   ├── 📁 widgets/                   # Reusable widgets
+│   │   ├── 📄 movie_card.dart
+│   │   ├── 📄 seat_widget.dart
+│   │   ├── 📄 custom_button.dart
+│   │   └── 📄 loading_indicator.dart
+│   └── 📁 layout/                    # Layout components
+│       ├── 📄 main_layout.dart
+│       └── 📄 bottom_navigation.dart
+│
+├── 📁 routes/                        # Navigation & routing
+│   ├── 📄 app_routes.dart
+│   └── 📄 route_generator.dart
+│
+└── 📄 main.dart                      # Entry point
+
+MongoDB Database: cinema_booking
+
+├── users
+│   ├── _id, email, password_hash, displayName
+│   ├── phone, avatar, role (user/admin)
+│   ├── firebase_uid, google_id, facebook_id
+│   └── created_at, updated_at
+│
+├── movies
+│   ├── _id, title, description, poster_url
+│   ├── trailer_url, duration, rating, genres
+│   ├── release_date, language, age_rating
+│   └── cast, director, status (showing/upcoming)
+│
+├── theaters
+│   ├── _id, name, location, city
+│   └── screens[] { screen_number, seats[], type }
+│
+├── showtimes
+│   ├── _id, movie_id, theater_id, screen_id
+│   ├── date, time, price, available_seats
+│   └── status (active/cancelled)
+│
+├── bookings
+│   ├── _id, user_id, showtime_id, seats[]
+│   ├── combo_items[], total_price, qr_code
+│   ├── status (pending/confirmed/cancelled)
+│   └── created_at, booking_date
+│
+├── transactions
+│   ├── _id, booking_id, user_id, amount
+│   ├── payment_method, vnpay_transaction_id
+│   ├── status (pending/success/failed/refunded)
+│   └── transaction_date
+│
+├── combos
+│   ├── _id, name, items[], price, image_url
+│   └── status (active/inactive)
+│
+└── notifications
+    ├── _id, user_id, title, message, type
+    ├── is_read, sent_at
+    └── metadata (booking_id, movie_id)
+
+Framework: Flutter 3.0+ - Cross-platform UI toolkit
+Language: Dart
+State Management: Flutter Bloc / Provider
+UI/UX Design: Figma
+Local Storage: Shared Preferences, Hive
+Authentication: Firebase Authentication
+Push Notification: Firebase Cloud Messaging (FCM)
+VNPAY: vnpay Node.js
+HTTP Client: Dio
+Navigation: go_router / AutoRoute
+
+Cấu trúc Microservices:
+Service						Chức năng					Tech Stack
+Auth Service			Đăng ký, đăng nhập, JWT, Firebase Auth		Node.js, Express, JWT, bcryptjs
+Booking Service		Quản lý phim, suất chiếu, đặt vé, QR Code		Node.js, Express, QRCode
+User Service			Quản lý profile, lịch sử, preferences			Node.js, Express, Mongoose
+Payment Service		VNPay integration, giao dịch, hoàn tiền		Node.js, Express, VNPay SDK
+Notification Service		Email, Push notification, nhắc nhở			Node.js, Nodemailer, FCM
+
+
+
+Hướng dẫn cài đặt
+
+📋 Yêu cầu hệ thống
+Mobile App:
+Flutter SDK ≥ 3.0.0
+Dart ≥ 2.17.0
+Android Studio (Android) hoặc Xcode (iOS)
+Device/Emulator: Android 5.0+ hoặc iOS 11+
+
+Backend:
+Node.js ≥ 20.x
+MongoDB ≥ 8.2.2
+Docker & Docker Compose (khuyến nghị)
+Git
+
+Tài khoản bên thứ 3:
+Firebase Project (Authentication, FCM, Firestore)
+VNPay Merchant Account (để test thanh toán)
+
+Cài đặt Backend
+Bước 1: Clone Repository
+git clone https://github.com/trieuhoang1212/Movie-Ticket-Booking-App.git
+cd Movie-Ticket-Booking-App
+
+Bước 2: Setup môi trường
+Sử dụng Docker (Khuyến nghị):
+cd SourceCode/Server
+docker-compose up -d
+
+Hoặc setup thủ công:
+Cài đặt MongoDB:
+Windows: Download từ https://www.mongodb.com/try/download/community
+
+
+Khởi động MongoDB
+mongod --dbpath /your/data/path
+Setup các Service:
+API Gateway
+cd api-gateway
+npm install
+cp .env.example .env
+# Chỉnh sửa .env với thông tin của bạn
+npm run dev
+
+Auth Service
+cd ../services/auth-service
+npm install
+cp .env.example .env
+npm start
+
+Tương tự cho các service khác:
+- booking-service
+- user-service
+- payment-service
+- notification-service
+
+Bước 3: Cấu hình Firebase
+Tạo Firebase Project tại Firebase Console
+Enable Authentication (Email/Password, Google, Facebook)
+Enable Cloud Firestore và Firebase Storage
+Enable Cloud Messaging (FCM)
+Tải Service Account Key (FireBase_Token.json)
+Đặt file vào SourceCode/Server/services/
+
+Bước 4: Cấu hình VNPay
+Đăng ký tài khoản test tại VNPay Sandbox
+Lấy TMN_CODE, HASH_SECRET
+Cập nhật vào .env của payment-service
+VNPAY_TMN_CODE=your_tmn_code
+VNPAY_HASH_SECRET=your_hash_secret
+VNPAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+VNPAY_RETURN_URL=http://localhost:3000/payment/vnpay_return
+
+Bước 5: Khởi tạo Database
+cd SourceCode/Server
+npm run seed  # Import dữ liệu mẫu (phim, rạp, ghế)
+
+Cài đặt Mobile App
+
+Bước 1: Cài đặt Flutter
+# Kiểm tra Flutter đã cài đặt
+flutter --version
+Nếu chưa, tải từ: https://flutter.dev/docs/get-started/install
+
+Bước 2: Setup Project
+cd SourceCode/Client
+flutter pub get
+
+Bước 3: Cấu hình Firebase cho Mobile
+Thêm app Android/iOS vào Firebase Project
+Tải google-services.json (Android) → đặt vào android/app/
+Tải GoogleService-Info.plist (iOS) → đặt vào ios/Runner/
+Chạy FlutterFire CLI:
+flutter pub global activate flutterfire_cli
+flutterfire configure
+
+Bước 4: Cấu hình API Endpoint
+Sửa file lib/core/constants/api_constants.dart:
+class ApiConstants {
+  static const String baseUrl = 'http://localhost:3000'; // Đổi thành IP của bạn
+  // Nếu test trên thiết bị thật: 'http://192.168.1.x:3000'
+}
+
+Bước 5: Chạy ứng dụng
+# Kiểm tra devices
+flutter devices
+
+# Chạy app
+flutter run
+
+# Hoặc build
+flutter build apk --release  # Android
+flutter build ios --release  # iOS
