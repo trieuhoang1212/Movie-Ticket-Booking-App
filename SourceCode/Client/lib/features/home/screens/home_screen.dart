@@ -7,6 +7,7 @@ import 'my_tickets_screen.dart';
 import 'favorite_screen.dart';
 import 'movie_detail_screen.dart';
 import 'notification_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,6 +38,67 @@ class _HomeScreenState extends State<HomeScreen> {
   // Thông báo lỗi
   String? errorMessage;
 
+  // Widget hiển thị hiệu ứng Skeleton
+  Widget _buildSkeletonLoader() {
+    return SizedBox(
+      height: 380, // Chiều cao khớp với _buildMovieSlider
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        physics:
+            const NeverScrollableScrollPhysics(), // Không cho cuộn khi đang load
+        itemCount: 2, // Hiển thị giả 2 item
+        padding: EdgeInsets.zero,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Shimmer.fromColors(
+              // Màu nền tối (hợp với theme app của bạn)
+              baseColor: const Color(0xFF2B2D3A),
+              // Màu sáng chạy qua (hiệu ứng)
+              highlightColor: const Color(0xFF3F4250),
+              child: Container(
+                // Độ rộng chiếm gần hết màn hình giống PageView của bạn
+                width: MediaQuery.of(context).size.width - 32,
+                decoration: BoxDecoration(
+                  color:
+                      Colors.black, // Bắt buộc phải có màu để Shimmer hoạt động
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                // Giả lập cấu trúc bên trong (Optional: để nhìn chi tiết hơn)
+                child: Stack(
+                  children: [
+                    // Giả lập phần text ở dưới
+                    Positioned(
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 20,
+                            width: 150,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            height: 12,
+                            width: 100,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +128,31 @@ class _HomeScreenState extends State<HomeScreen> {
         errorMessage = 'Không thể tải dữ liệu phim: $e';
       });
     }
+  }
+
+  bool _isFavorite(Movie movie) {
+    return _favoriteMovies.any((m) => m['title'] == movie.title);
+  }
+
+  // Hàm thêm/xóa phim khỏi danh sách yêu thích
+  void _toggleFavorite(Movie movie) {
+    setState(() {
+      if (_isFavorite(movie)) {
+        // Nếu đã có thì xóa đi
+        _favoriteMovies.removeWhere((m) => m['title'] == movie.title);
+      } else {
+        // Nếu chưa có thì thêm vào
+        // Chuyển đổi object Movie sang Map<String, String> như FavoriteScreen yêu cầu
+        _favoriteMovies.add({
+          'id': movie.id.toString(),
+          'title': movie.title,
+          'image': movie.posterUrl ?? '',
+          'duration': movie.durationFormatted,
+          'genre': movie.genreFormatted,
+          'rating': movie.ratingFormatted,
+        });
+      }
+    });
   }
 
   // Render màn hình theo tab được chọn
@@ -140,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildSectionTitle("Phim đang hot"),
                 const SizedBox(height: 16),
                 isLoadingHotMovies
-                    ? const Center(child: CircularProgressIndicator())
+                    ? _buildSkeletonLoader()
                     : _buildMovieSlider(
                         hotMovies,
                         currentIndex: _currentHotMovieIndex,
@@ -155,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildSectionTitle("Phim đang chiếu"),
                 const SizedBox(height: 16),
                 isLoadingNowShowingMovies
-                    ? const Center(child: CircularProgressIndicator())
+                    ? _buildSkeletonLoader()
                     : _buildMovieSlider(
                         nowShowingMovies,
                         currentIndex: _currentNowShowingIndex,
@@ -300,16 +387,26 @@ class _HomeScreenState extends State<HomeScreen> {
                       Positioned(
                         top: 16,
                         right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.favorite_border,
-                            color: Colors.white,
-                            size: 20,
+                        child: GestureDetector(
+                          onTap: () {
+                            _toggleFavorite(movie);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            // 3. Thay đổi Icon dựa trên trạng thái
+                            child: Icon(
+                              _isFavorite(movie)
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: _isFavorite(movie)
+                                  ? const Color(0xFFFF4444)
+                                  : Colors.white,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ),

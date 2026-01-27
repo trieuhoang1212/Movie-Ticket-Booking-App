@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎬 CUTH - Hệ Thống Đặt Vé Xem Phim Trực Tuyến
+# CUTH - Hệ Thống Đặt Vé Xem Phim Trực Tuyến
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?logo=flutter)](https://flutter.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -17,57 +17,57 @@
 
 ---
 
-## 📖 Giới thiệu
+## Giới thiệu
 
 **CUTH** (Cinema User Ticket Hub) là hệ thống đặt vé xem phim trực tuyến toàn diện, được xây dựng với mục đích hiện đại hóa trải nghiệm đặt vé của người dùng. Dự án áp dụng kiến trúc **Microservices** kết hợp **Clean Architecture**, đảm bảo tính mở rộng, bảo trì và hiệu suất cao.
 
-### 💡 Giải pháp
+### Giải pháp
 
 Thay vì phải đến rạp xếp hàng chờ đợi, người dùng có thể:
 
-- ✅ Duyệt phim đang chiếu/sắp chiếu
-- ✅ Chọn suất chiếu và ghế ngồi theo thời gian thực
-- ✅ Đặt mua combo bắp nước
-- ✅ Thanh toán trực tuyến an toàn (VNPay)
-- ✅ Nhận vé điện tử QR Code ngay lập tức
-- ✅ Quản lý lịch sử đặt vé cá nhân
+- Duyệt phim đang chiếu/sắp chiếu
+- Chọn suất chiếu và ghế ngồi theo thời gian thực
+- Đặt mua combo bắp nước
+- Thanh toán trực tuyến an toàn (VNPay)
+- Nhận vé điện tử QR Code ngay lập tức
+- Quản lý lịch sử đặt vé cá nhân
 
 Đồng thời, hệ thống cung cấp **Admin Dashboard** mạnh mẽ cho nhân viên rạp chiếu:
 
-- 🎯 Quản lý phim, suất chiếu, rạp
-- 📊 Theo dõi doanh thu, thống kê
-- 👥 Quản lý người dùng
-- 📢 Gửi thông báo, khuyến mãi
+- Quản lý phim, suất chiếu, rạp
+- Theo dõi doanh thu, thống kê
+- Quản lý người dùng
+- Gửi thông báo, khuyến mãi
 
-### 🎯 Mục tiêu dự án
+### Mục tiêu dự án
 
-- 🚀 Xây dựng ứng dụng đặt vé với UX/UI hiện đại, mượt mà
-- 🏗️ Áp dụng kiến trúc **Microservices** và **Clean Architecture**
-- ⚡ Tối ưu hóa quy trình đặt vé thời gian thực (Real-time booking)
-- 🔐 Đảm bảo bảo mật cao với JWT, Firebase Authentication
-- 💳 Tích hợp thanh toán trực tuyến qua VNPay
-- 📱 Hỗ trợ đa nền tảng (iOS, Android, Web)
+- Xây dựng ứng dụng đặt vé với UX/UI hiện đại, mượt mà
+- Áp dụng kiến trúc **Microservices** và **Clean Architecture**
+- Tối ưu hóa quy trình đặt vé thời gian thực (Real-time booking)
+- Đảm bảo bảo mật cao với JWT, Firebase Authentication
+- Tích hợp thanh toán trực tuyến qua VNPay
+- Hỗ trợ đa nền tảng (iOS, Android, Web)
 
 ---
 
-## 🌟 Tính năng nổi bật
+## Tính năng nổi bật
 
-### 👤 Dành cho Khách hàng (End-User)
+### Dành cho Khách hàng (End-User)
 
-#### 🔐 Xác thực & Bảo mật
+#### Xác thực & Bảo mật
 
 - Đăng ký/Đăng nhập qua Email/Password
 - Đăng nhập nhanh với Google, Facebook (Firebase Authentication)
 - Quên mật khẩu & xác thực 2 lớp (2FA)
 
-#### 🎬 Khám phá Phim
+#### Khám phá Phim
 
 - Danh sách phim đang chiếu, sắp chiếu
 - Tìm kiếm phim theo tên, thể loại, diễn viên
 - Thông tin chi tiết: Trailer, mô tả, đánh giá, thời lượng
 - Lọc phim theo rạp, thể loại, độ tuổi
 
-#### 🎟️ Đặt vé thông minh
+#### Đặt vé thông minh
 
 - **Chọn rạp & suất chiếu:** Hiển thị suất chiếu theo ngày, giờ
 - **Sơ đồ ghế trực quan:**
@@ -76,26 +76,26 @@ Thay vì phải đến rạp xếp hàng chờ đợi, người dùng có thể:
   - Chọn nhiều ghế cùng lúc
 - **Combo bắp nước:** Chọn combo ưu đãi hoặc tùy chỉnh
 
-#### 💳 Thanh toán
+#### Thanh toán
 
 - Tích hợp cổng thanh toán **VNPay**
 - Hỗ trợ: Thẻ ATM, Visa/Mastercard, QR Code
 - Lưu lịch sử giao dịch chi tiết
 
-#### 📱 Quản lý Vé
+#### Quản lý Vé
 
 - Vé điện tử dạng **QR Code**
 - Lưu trữ vé trong ứng dụng
 - Lịch sử đặt vé, chi tiêu
 - Hủy vé (theo chính sách)
 
-#### 🔔 Thông báo
+#### Thông báo
 
 - Xác nhận đặt vé qua Email/Push Notification
 - Nhắc nhở trước giờ chiếu
 - Thông báo khuyến mãi, phim mới
 
-### 🛠️ Dành cho Admin/Quản lý
+### Dành cho Admin/Quản lý
 
 - **Quản lý phim:** Thêm/sửa/xóa phim, trailer, thông tin
 - **Quản lý rạp & phòng chiếu:** Cấu hình ghế ngồi, thiết bị
@@ -107,90 +107,17 @@ Thay vì phải đến rạp xếp hàng chờ đợi, người dùng có thể:
 
 ---
 
-## 🏗️ Kiến trúc hệ thống
+## Kiến trúc hệ thống
 
-### 📐 Tổng quan Kiến trúc
+### Tổng quan Kiến trúc
 
-> **⚠️ Trạng thái hiện tại:** Mobile App (Flutter) đã được phát triển với **Clean Architecture**. Backend Microservices đang trong giai đoạn lên kế hoạch.
+> **Trạng thái hiện tại:** Mobile App (Flutter) đã được phát triển với **Clean Architecture**. Backend Microservices đang trong giai đoạn lên kế hoạch.
 
 Hệ thống được thiết kế với kiến trúc **Clean Architecture** cho Flutter app, chuẩn bị tích hợp **Microservices Backend** trong tương lai:
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                  ✅ Mobile App (Flutter) - IMPLEMENTED               │
-│                   iOS / Android / Web / Desktop                      │
-│                                                                      │
-│  ┌────────────────────────────────────────────────────────────────┐ │
-│  │                   PRESENTATION LAYER                           │ │
-│  │  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │ │
-│  │  │ Pages/  │  │ Providers│  │ Widgets/ │  │ Layout/  │       │ │
-│  │  │ Screens │  │ (Bloc)   │  │ Reusable │  │ Scaffold │       │ │
-│  │  └─────────┘  └──────────┘  └──────────┘  └──────────┘       │ │
-│  └─────────────────────────┬──────────────────────────────────────┘ │
-│                            │ Events/States                          │
-│  ┌─────────────────────────▼──────────────────────────────────────┐ │
-│  │                     DOMAIN LAYER                               │ │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │ │
-│  │  │  Entities/   │  │  Use Cases/  │  │ Repositories │        │ │
-│  │  │ Business Obj │  │ Business Log │  │  (Abstract)  │        │ │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘        │ │
-│  └─────────────────────────┬──────────────────────────────────────┘ │
-│                            │ Repository Interfaces                  │
-│  ┌─────────────────────────▼──────────────────────────────────────┐ │
-│  │                      DATA LAYER                                │ │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │ │
-│  │  │ Models/      │  │ Repositories │  │ Data Sources │        │ │
-│  │  │ DTOs         │  │ Impl         │  │ Remote/Local │        │ │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘        │ │
-│  └─────────────────────────┬──────────────────────────────────────┘ │
-│                            │ HTTP/API Calls (Ready for Backend)    │
-│  ┌─────────────────────────▼──────────────────────────────────────┐ │
-│  │                      CORE LAYER                                │ │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │ │
-│  │  │ DI/      │  │ Constants│  │ Themes/  │  │ Utils/   │      │ │
-│  │  │ GetIt    │  │ Config   │  │ Styles   │  │ Helpers  │      │ │
-│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘      │ │
-│  └────────────────────────────────────────────────────────────────┘ │
-└──────────────────────────┬───────────────────────────────────────────┘
-                           │ HTTPS/REST API (Sẵn sàng tích hợp)
-                           ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│           🔨 Backend Microservices - PLANNED (In Development)        │
-│                                                                      │
-│  ┌────────────────────────────────────────────────────────────────┐ │
-│  │             API Gateway (TypeScript)                           │ │
-│  │   ✓ Routing  ✓ Auth Middleware  ✓ Rate Limiting  ✓ Caching    │ │
-│  └──────────────────────────┬─────────────────────────────────────┘ │
-│                             │                                        │
-│      ┌──────────────────────┼────────────────┬────────┬───────────┐ │
-│      ▼                      ▼                ▼        ▼           ▼ │
-│  ┌────────┐  ┌──────────┐  ┌──────────┐  ┌────────┐  ┌────────┐  │
-│  │  Auth  │  │ Booking  │  │   User   │  │Payment │  │ Notify │  │
-│  │Service │  │ Service  │  │ Service  │  │Service │  │Service │  │
-│  │Pt 3001 │  │ Pt 3002  │  │ Pt 3003  │  │Pt 3004 │  │Pt 3005 │  │
-│  └───┬────┘  └────┬─────┘  └────┬─────┘  └───┬────┘  └───┬────┘  │
-│      └────────────┴─────────────┴────────────┴────────────┘        │
-│                              ▼                                       │
-│           ┌──────────────────────────────────┐                      │
-│           │   MongoDB 8.2.2 Cluster          │                      │
-│           │  • users      • movies           │                      │
-│           │  • bookings   • showtimes        │                      │
-│           │  • theaters   • combos           │                      │
-│           │  • transactions • notifications  │                      │
-│           └─────────────┬────────────────────┘                      │
-│                         │                                            │
-│         ┌───────────────┴─────────────┐                             │
-│         ▼                             ▼                             │
-│  ┌────────────────┐        ┌──────────────────┐                    │
-│  │ Firebase Suite │        │  VNPay Gateway   │                    │
-│  │ • Auth • FCM   │        │  • Payment API   │                    │
-│  │ • Firestore    │        │  • Transaction   │                    │
-│  │ • Storage      │        │  • Refund        │                    │
-│  └────────────────┘        └──────────────────┘                    │
-└──────────────────────────────────────────────────────────────────────┘
-```
+![kientruc](demo/screenshots/kientrucs.png)
 
-### 🎯 Clean Architecture - Mobile App (Flutter)
+### Clean Architecture - Mobile App (Flutter)
 
 ```
 SourceCode/Client/lib/
@@ -204,135 +131,97 @@ SourceCode/Client/lib/
 │
 ├── 📁 data/                          # Data layer (repositories, models, datasources)
 │   ├── 📁 models/                    # Data models (DTOs)
-│   │   ├── 📄 user_model.dart
-│   │   ├── 📄 movie_model.dart
-│   │   ├── 📄 booking_model.dart
-│   │   └── 📄 payment_model.dart
+│   │   ├── user_model.dart
+│   │   ├── movie_model.dart
+│   │   ├── booking_model.dart
+│   │   └── payment_model.dart
 │   ├── 📁 repositories/              # Repository implementations
-│   │   ├── 📄 auth_repository_impl.dart
-│   │   ├── 📄 movie_repository_impl.dart
-│   │   └── 📄 booking_repository_impl.dart
+│   │   ├── auth_repository_impl.dart
+│   │   ├── movie_repository_impl.dart
+│   │   └── booking_repository_impl.dart
 │   └── 📁 datasources/               # Data sources (Remote/Local)
 │       ├── 📁 remote/
-│       │   ├── 📄 auth_remote_datasource.dart
-│       │   ├── 📄 movie_remote_datasource.dart
-│       │   └── 📄 booking_remote_datasource.dart
+│       │   ├── auth_remote_datasource.dart
+│       │   ├── movie_remote_datasource.dart
+│       │   └── booking_remote_datasource.dart
 │       └── 📁 local/
-│           ├── 📄 auth_local_datasource.dart  # Shared Preferences, Hive
-│           └── 📄 cache_manager.dart
+│           ├── auth_local_datasource.dart  # Shared Preferences, Hive
+│           └── cache_manager.dart
 │
 ├── 📁 domain/                        # Domain layer (entities, use cases)
 │   ├── 📁 entities/                  # Business objects
-│   │   ├── 📄 user.dart
-│   │   ├── 📄 movie.dart
-│   │   ├── 📄 booking.dart
-│   │   ├── 📄 seat.dart
-│   │   └── 📄 showtime.dart
+│   │   ├── user.dart
+│   │   ├── movie.dart
+│   │   ├── booking.dart
+│   │   ├── seat.dart
+│   │   └── showtime.dart
 │   ├── 📁 repositories/              # Repository interfaces (abstract)
-│   │   ├── 📄 auth_repository.dart
-│   │   ├── 📄 movie_repository.dart
-│   │   └── 📄 booking_repository.dart
+│   │   ├── auth_repository.dart
+│   │   ├── movie_repository.dart
+│   │   └── booking_repository.dart
 │   └── 📁 usecases/                  # Business logic (use cases)
-│       ├── 📄 login_usecase.dart
-│       ├── 📄 get_movies_usecase.dart
-│       ├── 📄 book_ticket_usecase.dart
-│       └── 📄 process_payment_usecase.dart
+│       ├── login_usecase.dart
+│       ├── get_movies_usecase.dart
+│       ├── book_ticket_usecase.dart
+│       └── process_payment_usecase.dart
 │
 ├── 📁 presentation/                  # Presentation layer (UI, providers)
 │   ├── 📁 pages/                     # Screens
 │   │   ├── 📁 auth/
-│   │   │   ├── 📄 login_page.dart
-│   │   │   └── 📄 register_page.dart
+│   │   │   ├── login_page.dart
+│   │   │   └── register_page.dart
 │   │   ├── 📁 home/
-│   │   │   ├── 📄 home_page.dart
-│   │   │   └── 📄 movie_detail_page.dart
+│   │   │   ├── home_page.dart
+│   │   │   └── movie_detail_page.dart
 │   │   ├── 📁 booking/
-│   │   │   ├── 📄 showtime_selection_page.dart
-│   │   │   ├── 📄 seat_selection_page.dart
-│   │   │   └── 📄 combo_selection_page.dart
+│   │   │   ├── showtime_selection_page.dart
+│   │   │   ├── seat_selection_page.dart
+│   │   │   └── combo_selection_page.dart
 │   │   ├── 📁 payment/
-│   │   │   ├── 📄 payment_page.dart
-│   │   │   └── 📄 payment_success_page.dart
+│   │   │   ├── payment_page.dart
+│   │   │   └── payment_success_page.dart
 │   │   └── 📁 profile/
-│   │       ├── 📄 profile_page.dart
-│   │       └── 📄 booking_history_page.dart
+│   │       ├── profile_page.dart
+│   │       └── booking_history_page.dart
 │   ├── 📁 providers/                 # State management (Bloc/Provider)
-│   │   ├── 📄 auth_bloc.dart
-│   │   ├── 📄 movie_bloc.dart
-│   │   ├── 📄 booking_bloc.dart
-│   │   └── 📄 payment_bloc.dart
+│   │   ├── auth_bloc.dart
+│   │   ├── movie_bloc.dart
+│   │   ├── booking_bloc.dart
+│   │   └── payment_bloc.dart
 │   ├── 📁 widgets/                   # Reusable widgets
-│   │   ├── 📄 movie_card.dart
-│   │   ├── 📄 seat_widget.dart
-│   │   ├── 📄 custom_button.dart
-│   │   └── 📄 loading_indicator.dart
+│   │   ├── movie_card.dart
+│   │   ├── seat_widget.dart
+│   │   ├── custom_button.dart
+│   │   └── loading_indicator.dart
 │   └── 📁 layout/                    # Layout components
-│       ├── 📄 main_layout.dart
-│       └── 📄 bottom_navigation.dart
+│       ├── main_layout.dart
+│       └── bottom_navigation.dart
 │
 ├── 📁 routes/                        # Navigation & routing
-│   ├── 📄 app_routes.dart
-│   └── 📄 route_generator.dart
+│   ├── app_routes.dart
+│   └── route_generator.dart
 │
-└── 📄 main.dart                      # Entry point
+└── main.dart                      # Entry point
 ```
 
-### 🔄 Data Flow trong Clean Architecture
+### Data Flow trong Clean Architecture
 
-```
-User Interaction (UI)
-        │
-        ▼
-┌───────────────────┐
-│ Presentation      │ ◄─── UI Events (Button clicks, form submit)
-│ (Pages/Widgets)   │
-└────────┬──────────┘
-         │ Dispatch Events
-         ▼
-┌───────────────────┐
-│ Bloc/Provider     │ ◄─── State Management
-│ (Business Logic)  │
-└────────┬──────────┘
-         │ Call Use Cases
-         ▼
-┌───────────────────┐
-│ Use Cases         │ ◄─── Business Rules
-│ (Domain Logic)    │
-└────────┬──────────┘
-         │ Repository Interface
-         ▼
-┌───────────────────┐
-│ Repository Impl   │ ◄─── Data Orchestration
-│ (Data Layer)      │
-└────────┬──────────┘
-         │ Fetch Data
-         ▼
-┌───────────────────┐
-│ Data Sources      │ ◄─── API Calls / Local Cache
-│ (Remote/Local)    │
-└────────┬──────────┘
-         │ HTTP Request
-         ▼
-┌───────────────────┐
-│ API Gateway       │ ◄─── Backend Services
-│ (REST API)        │
-└───────────────────┘
-```
+![dataflow](demo/screenshots/dataflow.png)
 
-### 📦 Cấu trúc Microservices Backend (🔨 Planned - Đang lên kế hoạch)
+### Cấu trúc Microservices Backend
 
 > **Lưu ý:** Backend microservices đang trong giai đoạn thiết kế và phát triển. Mobile app đã sẵn sàng tích hợp khi backend hoàn thành.
 
 | Service                  | Port | Chức năng                                         | Tech Stack                      | Trạng thái |
 | ------------------------ | ---- | ------------------------------------------------- | ------------------------------- | ---------- |
-| **API Gateway**          | 3000 | Routing, Auth Middleware, Rate Limiting, Caching  | TypeScript, Express, node-cache | 🔨 Planned |
-| **Auth Service**         | 3001 | Đăng ký, đăng nhập, JWT, Firebase Auth, 2FA       | Node.js, Express, JWT, bcryptjs | 🔨 Planned |
-| **Booking Service**      | 3002 | Quản lý phim, suất chiếu, đặt vé, QR Code, rạp    | Node.js, Express, QRCode        | 🔨 Planned |
-| **User Service**         | 3003 | Quản lý profile, lịch sử, preferences, watchlist  | Node.js, Express, Mongoose      | 🔨 Planned |
-| **Payment Service**      | 3004 | VNPay integration, giao dịch, hoàn tiền, hóa đơn  | Node.js, Express, VNPay SDK     | 🔨 Planned |
-| **Notification Service** | 3005 | Email (Nodemailer), Push notification (FCM), nhắc | Node.js, Nodemailer, FCM        | 🔨 Planned |
+| **API Gateway**          | 3000 | Routing, Auth Middleware, Rate Limiting, Caching  | TypeScript, Express, node-cache |  Planned |
+| **Auth Service**         | 3001 | Đăng ký, đăng nhập, JWT, Firebase Auth, 2FA       | Node.js, Express, JWT, bcryptjs |  Planned |
+| **Booking Service**      | 3002 | Quản lý phim, suất chiếu, đặt vé, QR Code, rạp    | Node.js, Express, QRCode        |  Planned |
+| **User Service**         | 3003 | Quản lý profile, lịch sử, preferences, watchlist  | Node.js, Express, Mongoose      |  Planned |
+| **Payment Service**      | 3004 | VNPay integration, giao dịch, hoàn tiền, hóa đơn  | Node.js, Express, VNPay SDK     |  Planned |
+| **Notification Service** | 3005 | Email (Nodemailer), Push notification (FCM), nhắc | Node.js, Nodemailer, FCM        |  Planned |
 
-### 🗄️ Database Collections (🔨 Planned - Đang thiết kế)
+###  Database Collections (Planned - Đang thiết kế)
 
 > **Lưu ý:** Database schema đang được thiết kế chi tiết để tích hợp với backend microservices.
 
@@ -383,9 +272,9 @@ MongoDB Database: cinema_booking
 
 ---
 
-## 💻 Công nghệ sử dụng
+## Công nghệ sử dụng
 
-### 📱 Mobile App (Frontend)
+### Mobile App (Frontend)
 
 | Công nghệ             | Mô tả                                                            |
 | --------------------- | ---------------------------------------------------------------- |
@@ -400,7 +289,7 @@ MongoDB Database: cinema_booking
 | **HTTP Client**       | Dio                                                              |
 | **Navigation**        | go_router / AutoRoute                                            |
 
-### ⚙️ Backend & API
+### Backend & API
 
 #### API Gateway (TypeScript)
 
@@ -463,7 +352,7 @@ MongoDB Database: cinema_booking
 ✓ Promotional Campaigns
 ```
 
-### 🗄️ Database & Storage
+### Database & Storage
 
 | Công nghệ              | Mô tả                                                      |
 | ---------------------- | ---------------------------------------------------------- |
@@ -483,7 +372,7 @@ MongoDB Database: cinema_booking
 - `combos` - Combo bắp nước
 - `notifications` - Lịch sử thông báo
 
-### 🔐 Security & Authentication
+### Security & Authentication
 
 | Công nghệ                 | Mô tả                                       |
 | ------------------------- | ------------------------------------------- |
@@ -495,7 +384,7 @@ MongoDB Database: cinema_booking
 | **Helmet.js**             | HTTP headers security                       |
 | **Rate Limiting**         | Chống DDoS, brute-force attacks             |
 
-### ✅ Validation & Documentation
+### Validation & Documentation
 
 | Công nghệ              | Mô tả                         |
 | ---------------------- | ----------------------------- |
@@ -504,7 +393,7 @@ MongoDB Database: cinema_booking
 | **JSDoc**              | Code-level documentation      |
 | **Postman Collection** | API testing & examples        |
 
-### 🐳 DevOps & Deployment
+### DevOps & Deployment
 
 | Công nghệ          | Mô tả                              |
 | ------------------ | ---------------------------------- |
@@ -514,7 +403,7 @@ MongoDB Database: cinema_booking
 | **Non-root User**  | Security best practices            |
 | **Git & GitHub**   | Version control & collaboration    |
 
-### 🛠️ Development Tools
+### Development Tools
 
 | Tool                   | Mục đích                     |
 | ---------------------- | ---------------------------- |
@@ -528,9 +417,9 @@ MongoDB Database: cinema_booking
 
 ---
 
-## 🚀 Hướng dẫn cài đặt
+## Hướng dẫn cài đặt
 
-### 📋 Yêu cầu hệ thống
+### Yêu cầu hệ thống
 
 **Mobile App:**
 
@@ -551,7 +440,7 @@ MongoDB Database: cinema_booking
 - Firebase Project (Authentication, FCM, Firestore)
 - VNPay Merchant Account (để test thanh toán)
 
-### 🔧 Cài đặt Backend
+### Cài đặt Backend
 
 #### Bước 1: Clone Repository
 
@@ -634,7 +523,7 @@ cd SourceCode/Server
 npm run seed  # Import dữ liệu mẫu (phim, rạp, ghế)
 ```
 
-### 📱 Cài đặt Mobile App
+### Cài đặt Mobile App
 
 #### Bước 1: Cài đặt Flutter
 
@@ -691,7 +580,7 @@ flutter build ios --release  # iOS
 
 ---
 
-## 🎮 Demo & Screenshots
+## Demo & Screenshots
 
 > **Lưu ý:** Thêm ảnh chụp màn hình vào thư mục `demo/screenshots/`
 
@@ -709,7 +598,7 @@ flutter build ios --release  # iOS
 
 </div>
 
-## 📚 API Documentation
+## API Documentation
 
 Sau khi chạy backend, truy cập Swagger UI:
 
@@ -756,7 +645,7 @@ GET  /api/payments/:bookingId
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Backend Testing
 
@@ -786,7 +675,7 @@ flutter drive --target=test_driver/app.dart
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 ### Backend Deployment (Docker)
 
@@ -820,10 +709,10 @@ flutter build web --release
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 <details>
-<summary><b>❌ Lỗi: "Unable to connect to MongoDB"</b></summary>
+<summary><b>Lỗi: "Unable to connect to MongoDB"</b></summary>
 
 **Giải pháp:**
 
@@ -833,7 +722,7 @@ flutter build web --release
 </details>
 
 <details>
-<summary><b>❌ Lỗi: "Firebase Authentication failed"</b></summary>
+<summary><b>Lỗi: "Firebase Authentication failed"</b></summary>
 
 **Giải pháp:**
 
@@ -843,7 +732,7 @@ flutter build web --release
 </details>
 
 <details>
-<summary><b>❌ Lỗi: "VNPay payment not working"</b></summary>
+<summary><b>Lỗi: "VNPay payment not working"</b></summary>
 
 **Giải pháp:**
 
@@ -853,7 +742,7 @@ flutter build web --release
 </details>
 
 <details>
-<summary><b>❌ Lỗi: "Flutter build failed"</b></summary>
+<summary><b>Lỗi: "Flutter build failed"</b></summary>
 
 **Giải pháp:**
 
@@ -865,7 +754,7 @@ flutter build web --release
 
 ---
 
-## 🤝 Đóng góp
+## Đóng góp
 
 Chúng tôi hoan nghênh mọi đóng góp! Để đóng góp:
 
@@ -883,7 +772,7 @@ Chúng tôi hoan nghênh mọi đóng góp! Để đóng góp:
 
 ---
 
-## 📄 License
+## License
 
 Dự án này được phân phối dưới giấy phép **MIT License**. Xem file [LICENSE](LICENSE) để biết thêm chi tiết.
 
@@ -897,7 +786,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy...
 
 ---
 
-## 👥 Team Members
+## Team Members
 
 | Vai trò                            | Thành viên                     | GitHub                                                          |
 | ---------------------------------- | ------------------------------ | --------------------------------------------------------------- |
@@ -907,13 +796,13 @@ Permission is hereby granted, free of charge, to any person obtaining a copy...
 
 ---
 
-## 📞 Liên hệ & Hỗ trợ
+## Liên hệ & Hỗ trợ
 
 - **Email:** triuu1212@gmail.com
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Flutter Team](https://flutter.dev/) - Amazing cross-platform framework
 - [Firebase](https://firebase.google.com/) - Backend services

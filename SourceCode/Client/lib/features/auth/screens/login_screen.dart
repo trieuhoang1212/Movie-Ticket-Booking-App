@@ -170,7 +170,7 @@ class LoginScreen extends StatelessWidget {
                     Expanded(child: Divider(color: Colors.grey)),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text("or", style: TextStyle(color: Colors.grey)),
+                      child: Text("hoặc", style: TextStyle(color: Colors.grey)),
                     ),
                     Expanded(child: Divider(color: Colors.grey)),
                   ],
@@ -210,7 +210,7 @@ class LoginScreen extends StatelessWidget {
                         );
                       },
                       child: const Text(
-                        "Log in with password",
+                        "Đăng nhập bằng mật khẩu",
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.white,

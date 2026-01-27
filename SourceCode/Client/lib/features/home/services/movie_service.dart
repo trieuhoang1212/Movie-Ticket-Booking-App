@@ -4,7 +4,7 @@ import '../models/movie_model.dart';
 
 class MovieService {
   // URL của API Gateway - Thay đổi theo môi trường của bạn
-  static const String baseUrl = 'http://192.168.43.107:3000';
+  static const String baseUrl = 'http://10.0.2.2:3000';
 
   // Lấy danh sách phim theo status và isHot
   Future<List<Movie>> getMovies({String? status, bool? isHot}) async {

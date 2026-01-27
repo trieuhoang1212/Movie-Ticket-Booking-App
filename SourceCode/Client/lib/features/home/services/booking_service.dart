@@ -10,7 +10,7 @@ import 'database_helper.dart';
 class BookingService {
   // URL của API Gateway
   // Android emulator: 10.0.2.2 = localhost của máy host
-  static const String baseUrl = 'http://192.168.43.107:3000/api/bookings';
+  static const String baseUrl = 'http://10.0.2.2:3000/api/bookings';
 
   // Lấy danh sách booking của user hiện tại
   Future<List<Booking>> getMyBookings() async {

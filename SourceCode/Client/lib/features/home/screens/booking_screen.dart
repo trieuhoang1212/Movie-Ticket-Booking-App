@@ -443,9 +443,9 @@ class _BookingScreenState extends State<BookingScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildLegendItem(colorReserved, "Booked"),
-              _buildLegendItem(colorAvailable, "Available"),
-              _buildLegendItem(colorSelected, "Selected"),
+              _buildLegendItem(colorReserved, "Đã đặt"),
+              _buildLegendItem(colorAvailable, "Có sẵn"),
+              _buildLegendItem(colorSelected, "Đã chọn"),
             ],
           ),
 
@@ -453,7 +453,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
           // Tổng tiền
           Text(
-            "${(_totalAmount / 1000).toStringAsFixed(0)}.000đ for ${_selectedSeatIds.length} tickets",
+            "${(_totalAmount / 1000).toStringAsFixed(0)}.000đ cho ${_selectedSeatIds.length} vé",
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
