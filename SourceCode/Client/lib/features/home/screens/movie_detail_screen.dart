@@ -30,13 +30,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Lấy thông tin phim từ widget widget.movieData
     final movie = widget.movieData;
 
     return Scaffold(
-      // Cho phép nội dung tràn lên behind AppBar
       extendBodyBehindAppBar: true,
-      // Sử dụng Appbar trong suốt để chứa nút Back và nút Yêu thích
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'movie_detail_screen.dart';
 
 class FavoriteScreen extends StatelessWidget {
-  // 1. Khai báo biến để nhận danh sách phim từ HomeScreen
   final List<Map<String, String>> favoriteMovies;
 
-  const FavoriteScreen({
-    super.key,
-    required this.favoriteMovies, // Bắt buộc truyền vào
-  });
+  const FavoriteScreen({super.key, required this.favoriteMovies});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +17,11 @@ class FavoriteScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           "Danh sách yêu thích",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         // Nút Back
         leading: Container(
@@ -31,30 +31,26 @@ class FavoriteScreen extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 18,
+              color: Colors.white,
+            ),
             onPressed: () {
-              // Nếu màn hình này nằm trong TabBar thì nút này có thể không cần thiết,
-              // nhưng nếu được push từ màn hình khác thì cần pop.
-              // Dùng maybePop để an toàn.
-              Navigator.maybePop(context);
+              Navigator.pop(context);
             },
           ),
         ),
       ),
       body: Stack(
         children: [
-          // 1. ẢNH NỀN (Background Image)
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/BG.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/BG.png', fit: BoxFit.cover),
           ),
 
           // 2. LỚP PHỦ MÀU ĐEN MỜ (Overlay)
           Positioned.fill(
             child: Container(
-              // Dùng withValues thay cho withOpacity
               color: const Color(0xFF151720).withValues(alpha: 0.5),
             ),
           ),
@@ -63,16 +59,17 @@ class FavoriteScreen extends StatelessWidget {
           favoriteMovies.isEmpty
               ? _buildEmptyState()
               : SafeArea(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: favoriteMovies.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final movie = favoriteMovies[index];
-                return _buildFavoriteItem(context, movie);
-              },
-            ),
-          ),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: favoriteMovies.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final movie = favoriteMovies[index];
+                      return _buildFavoriteItem(context, movie);
+                    },
+                  ),
+                ),
         ],
       ),
     );
@@ -165,7 +162,11 @@ class FavoriteScreen extends StatelessWidget {
                   // Rating
                   Row(
                     children: [
-                      const Icon(Icons.star, color: Color(0xFFFF4444), size: 16),
+                      const Icon(
+                        Icons.star,
+                        color: Color(0xFFFF4444),
+                        size: 16,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         movie["rating"] ?? "",
@@ -176,7 +177,7 @@ class FavoriteScreen extends StatelessWidget {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -187,7 +188,11 @@ class FavoriteScreen extends StatelessWidget {
               children: [
                 Container(
                   margin: const EdgeInsets.only(bottom: 50),
-                  child: const Icon(Icons.favorite, color: Color(0xFFFF4444), size: 24),
+                  child: const Icon(
+                    Icons.favorite,
+                    color: Color(0xFFFF4444),
+                    size: 24,
+                  ),
                 ),
               ],
             ),
